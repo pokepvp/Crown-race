@@ -1,6 +1,6 @@
 {
   "name": "Crown Race",
-  "description": "On-chain racing game for Binance Agent ID holders on BNB Chain: weekly heats on a 100-step track, free daily moves, Nitro boosts, winner takes 50% of the pool, paid automatically by the contract.",
+  "description": "On-chain racing game for Binance Agent ID holders on BNB Chain: weekly heats on a 100-step track, free daily moves, Nitro boosts, champion takes a 50%-of-pool prize paid by the project within 24 hours of settlement (recorded on-chain).",
   "url": "https://crownrace.site",
   "chain": { "name": "BNB Chain", "chainId": 56 },
   "status": "pre-launch",

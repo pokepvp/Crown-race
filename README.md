@@ -8,7 +8,7 @@ Racers advance along a 100-step track toward the crown in weekly heats (Monday 0
 - **Pro entry** — starts 5 steps ahead, up to 3 racers per wallet
 - **Daily move** — free, once per day, advances 1–6 steps (drawn on-chain, verifiable)
 - **Nitro boosts** — optional paid accelerators (+2 / +7 / +20 steps)
-- **Prizes** — the heat winner receives 50% of the prize pool, paid automatically by the smart contract at settle; the other 50% goes to the project
+- **Prizes** — the heat winner is recorded on-chain as champion with a prize of 50% of the prize pool; the full pool goes to the project at settle and the champion's prize is paid by the project within 24 hours (flagged on-chain via markPrizePaid)
 
 A playable demo of the race runs directly on the website (play credits, no wallet needed).
 

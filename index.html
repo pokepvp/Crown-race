@@ -7,7 +7,6 @@
     <meta name="theme-color" content="#04070e" />
     <!-- App / install icons -->
     
-
     
     
     <link rel="icon" type="image/png" sizes="512x512" href="/assets/icon-512.png" />
@@ -20,11 +19,11 @@
     <meta name="apple-mobile-web-app-title" content="Crown Race" />
     <meta name="application-name" content="Crown Race" />
     <title>Crown Race — Race for the Crown | crownrace.site</title>
-    <meta name="description" content="Crown Race is a 100-step on-chain race for Binance Agent ID holders on BNB Chain. Free Rookie entry or Pro entry, a free daily move, Nitro boosts, weekly heats — first to the crown wins 50% of the pool, paid automatically by the contract." />
+    <meta name="description" content="Crown Race is a 100-step on-chain race for Binance Agent ID holders on BNB Chain. Free Rookie entry or Pro entry, a free daily move, Nitro boosts, weekly heats — the champion's prize is 50% of the pool, recorded on-chain at settlement and paid by the project within 24 hours." />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Crown Race" />
     <meta property="og:title" content="Crown Race — Race for the Crown" />
-    <meta property="og:description" content="A 100-step on-chain race on BNB Chain for Binance Agent ID holders. Weekly heats, free daily moves, winner takes 50% of the pool — paid automatically by the contract." />
+    <meta property="og:description" content="A 100-step on-chain race on BNB Chain for Binance Agent ID holders. Weekly heats, free daily moves, champion's prize is 50% of the pool — recorded on-chain, paid by the project within 24 hours of settlement." />
     <meta property="og:url" content="https://crownrace.site/" />
     <meta property="og:image" content="https://crownrace.site/assets/og-image.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
@@ -35,7 +34,7 @@
     <meta name="twitter:site" content="@PlayCrownRace" />
     <meta name="twitter:creator" content="@PlayCrownRace" />
     <meta name="twitter:title" content="Crown Race — Race for the Crown" />
-    <meta name="twitter:description" content="100 steps. One crown. Weekly on-chain heats for Binance Agent ID holders — free daily moves, Nitro boosts, 50% of the pool to the winner, paid automatically." />
+    <meta name="twitter:description" content="100 steps. One crown. Weekly on-chain heats for Binance Agent ID holders — free daily moves, Nitro boosts, champion's prize is 50% of the pool, paid by the project within 24h of settlement." />
     <meta name="twitter:image" content="https://crownrace.site/assets/og-image.jpg" />
     <meta name="twitter:image:alt" content="Crown Race — a night race track with racers and light trails heading to a glowing golden crown at the finish" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -415,6 +414,33 @@
       .heat-strip b{display:block;font-family:var(--display);font-size:17px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold2)}
       .heat-strip span{color:var(--muted);font-size:13.5px}
 
+      /* ---------- racer cards (NFT) ---------- */
+      .tier-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+      .tier-card{
+        --tc:#3ddc84;background:var(--panel);border:2px solid var(--tc);border-radius:16px;
+        padding:22px 20px;display:flex;flex-direction:column;
+      }
+      .tier-card.pro{--tc:#4da3ff}
+      .tier-card.nitro{--tc:#ff8c42}
+      .tier-card.champ{--tc:#f6b81e}
+      .tier-art{
+        background:linear-gradient(180deg,#0d1628,#060b16);border:1px solid var(--line);
+        border-radius:10px;padding:18px 0 14px;text-align:center;margin-bottom:16px;
+      }
+      .tier-card h3{
+        font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;
+        font-size:27px;margin:0 0 2px;color:var(--tc);
+      }
+      .tier-cap{font-family:var(--display);font-weight:600;font-size:16.5px;letter-spacing:.05em;color:#fff;margin:0 0 8px;text-transform:uppercase}
+      .tier-src{color:var(--muted);font-size:14.5px;margin:0 0 14px}
+      .tier-perk{color:#cfdaee;font-size:14.5px;margin:auto 0 0}
+      .planned-badge{
+        display:inline-block;font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.14em;
+        text-transform:uppercase;color:#191104;background:var(--gold);border-radius:5px;
+        padding:2px 8px;margin-right:8px;vertical-align:2px;
+      }
+      .cards-prompt{margin-top:16px;max-width:640px}
+
       /* ---------- agent ---------- */
       .agent-note{
         display:inline-block;background:#160f02;border:1px solid var(--gold-deep);color:var(--gold2);
@@ -470,8 +496,12 @@
       .foot-links a:hover{text-decoration:underline}
       .foot-meta{color:var(--faint);font-size:13.5px}
 
+      @media (max-width:520px){
+        .tier-grid{grid-template-columns:1fr}
+      }
       @media (max-width:820px){
         .steps,.prize-cols{grid-template-columns:1fr}
+        .tier-grid{grid-template-columns:repeat(2,1fr)}
         .lanes,.prompts,.move-grid{grid-template-columns:1fr}
         .hero-content{margin-top:-110px}
         .nav a{padding:9px 7px;font-size:13.5px}
@@ -496,6 +526,7 @@
           <a href="#enter" data-i18n="nav_enter">Enter</a>
           <a href="#move" data-i18n="nav_move">Move &amp; Nitro</a>
           <a href="#prizes" data-i18n="nav_prizes">Prizes</a>
+          <a href="#cards" data-i18n="nav_cards">Cards</a>
           <a href="#agent" data-i18n="nav_agent">Agent</a>
           <a href="#faq" data-i18n="nav_faq">FAQ</a>
           <span class="lang-toggle" role="group" aria-label="Language">
@@ -514,7 +545,7 @@
         <span class="prelaunch"><span class="dot"></span><span data-i18n="badge_prelaunch">Pre-launch — first heat opens at launch</span></span>
         <h1>CROWN <span class="gold">RACE</span></h1>
         <p class="tagline" data-i18n="tagline">Race for the Crown</p>
-        <p class="hero-sub" data-i18n="hero_sub">A 100-step on-chain race for Binance Agent ID holders on BNB Chain. Enter free or go Pro, move once a day for free, and race everyone to the golden crown. First to step 100 — or farthest when the heat ends — takes 50% of the prize pool, paid automatically by the smart contract.</p>
+        <p class="hero-sub" data-i18n="hero_sub">A 100-step on-chain race for Binance Agent ID holders on BNB Chain. Enter free or go Pro, move once a day for free, and race everyone to the golden crown. First to step 100 — or farthest when the heat ends — earns a prize of 50% of the pool, recorded on-chain at settlement and paid by the project within 24 hours.</p>
         <div class="hero-ctas">
           <button class="btn disabled" type="button" disabled aria-disabled="true" data-i18n="cta_rookie">Rookie entry — opens at launch</button>
           <button class="btn disabled" type="button" disabled aria-disabled="true" data-i18n="cta_pro">Pro entry — opens at launch</button>
@@ -524,7 +555,7 @@
           <span class="chip"><b>100</b><span data-i18n="chip_steps">steps from Start to the Crown</span></span>
           <span class="chip"><b data-i18n="chip_heat_b">Weekly heats</b><span data-i18n="chip_heat">Monday 00:00 UTC → Monday 00:00 UTC</span></span>
           <span class="chip"><b>2,222</b><span data-i18n="chip_cap">max racers per heat</span></span>
-          <span class="chip"><b>50%</b><span data-i18n="chip_prize">of the pool to the winner, paid by the contract</span></span>
+          <span class="chip"><b>50%</b><span data-i18n="chip_prize">of the pool to the winner, paid by the project within 24h</span></span>
           <span class="chip"><b>0 BNB</b><span data-i18n="chip_move">daily move, every day, for every racer</span></span>
         </div>
         <p class="status-line" data-i18n="status_line">Status: the Crown Race contract is not deployed yet. No heat is running, no entries are open, and there is no contract address to send funds to — anyone claiming otherwise is not us. Entry opens when Heat 1 launches.</p>
@@ -710,7 +741,7 @@
           <div class="step-card">
             <div class="step-num">03</div>
             <h3 data-i18n="how3_t">Win at the settle</h3>
-            <p data-i18n="how3_p">The heat ends the moment someone crosses step 100, or on Monday 00:00 UTC. Anyone can call the settle — the contract pays the winner 50% of the pool automatically and crowns them in the Hall of Champions.</p>
+            <p data-i18n="how3_p">The heat ends the moment someone crosses step 100, or on Monday 00:00 UTC. Anyone can call the settle — the champion and their prize (50% of the pool) are recorded on-chain, the project pays the prize within 24 hours and marks it paid on-chain, and the champion joins the Hall of Champions.</p>
           </div>
         </div>
       </section>
@@ -796,13 +827,13 @@
       <section id="prizes">
         <div class="sec-head">
           <p class="sec-kicker" data-i18n="prize_kicker">Heats &amp; prizes</p>
-          <h2 data-i18n="prize_title">The contract pays the winner. Nobody else touches the pool.</h2>
-          <p data-i18n="prize_sub">The prize pool is funded by Pro entries and Nitro purchases during the heat. When the heat settles, the smart contract itself sends the winner their share — automatically, in the same transaction.</p>
+          <h2 data-i18n="prize_title">The champion is crowned on-chain. The project pays the prize.</h2>
+          <p data-i18n="prize_sub">The prize pool is funded by Pro entries and Nitro purchases during the heat. When the heat settles, the contract records the champion and their prize entitlement — 50% of the pool — on-chain, and the full pool goes to the project. The project then pays the champion's prize manually within 24 hours of settlement and marks it paid on-chain, so anyone can verify the payout.</p>
         </div>
         <div class="prize-card">
-          <div class="split-bar" role="img" aria-label="Prize pool split: 50 percent to the winner, 50 percent to the project">
-            <div class="split-winner" data-i18n="split_winner">Winner · 50%</div>
-            <div class="split-project" data-i18n="split_project">Project · 50%</div>
+          <div class="split-bar" role="img" aria-label="Prize pool split: champion prize 50 percent, paid by the project within 24 hours of settlement; project share 50 percent">
+            <div class="split-winner" data-i18n="split_winner">Champion prize · 50%</div>
+            <div class="split-project" data-i18n="split_project">Project share · 50%</div>
           </div>
           <div class="prize-cols">
             <div>
@@ -811,7 +842,7 @@
             </div>
             <div>
               <h4 data-i18n="prize_c2_t">How it is paid</h4>
-              <p data-i18n="prize_c2_p">Settling is permissionless — anyone can call it once the heat is over. The contract pays 50% of the pool to the winner and 50% to the project. No manual payouts, no waiting, no promises outside the code.</p>
+              <p data-i18n="prize_c2_p">Settling is permissionless — anyone can call it once the heat is over. The settle records the champion and the prize (50% of the pool) on-chain; the project then sends the prize to the champion's wallet within 24 hours and flags it paid on-chain (prizePaid). No off-record promises — check the champion, prize and prizePaid records yourself.</p>
             </div>
             <div>
               <h4 data-i18n="prize_c3_t">Crowned forever</h4>
@@ -822,8 +853,82 @@
             <div><b data-i18n="heat_1_b">Heat opens</b><span data-i18n="heat_1_s">Monday 00:00 UTC — entries open</span></div>
             <div><b data-i18n="heat_2_b">All week</b><span data-i18n="heat_2_s">Daily free moves + Nitro, any time</span></div>
             <div><b data-i18n="heat_3_b">Early finish</b><span data-i18n="heat_3_s">Heat ends the moment a racer crosses step 100</span></div>
-            <div><b data-i18n="heat_4_b">Heat closes</b><span data-i18n="heat_4_s">Monday 00:00 UTC — settle pays the winner</span></div>
+            <div><b data-i18n="heat_4_b">Heat closes</b><span data-i18n="heat_4_s">Monday 00:00 UTC — settle records the champion; prize paid within 24h</span></div>
           </div>
+        </div>
+      </section>
+
+      <!-- ======================= RACER CARDS (NFT) ======================= -->
+      <section id="cards">
+        <div class="sec-head">
+          <p class="sec-kicker" data-i18n="cards_kicker">Crown Racer Cards · NFT</p>
+          <h2 data-i18n="cards_title">Collect your racer cards</h2>
+          <p data-i18n="cards_sub">A companion ERC-721 collection for Crown Race on BNB Chain: 2,222 cards in four tiers. Two mint lanes run in parallel — the free lane never blocks the paid lane.</p>
+        </div>
+        <div class="tier-grid">
+          <article class="tier-card rookie">
+            <div class="tier-art"><svg width="52" height="44" viewBox="0 0 40 34" aria-hidden="true"><path d="M3 27 L1 9 L12 17 L20 4 L28 17 L39 9 L37 27 Z" fill="none" stroke="#3ddc84" stroke-width="2.4"/><rect x="3" y="28.5" width="34" height="3.6" rx="1.8" fill="#3ddc84"/></svg></div>
+            <h3>Rookie</h3>
+            <p class="tier-cap" data-i18n="cards_rookie_cap">Cap · 1,333 cards</p>
+            <p class="tier-src" data-i18n="cards_src_rookie">The free-mint card — and 60% of paid draws.</p>
+            <p class="tier-perk"><span class="planned-badge" data-i18n="cards_perk_badge">Planned</span><span data-i18n="cards_perk_rookie">A head-start bonus in future heats for card holders.</span></p>
+          </article>
+          <article class="tier-card pro">
+            <div class="tier-art"><svg width="52" height="44" viewBox="0 0 40 34" aria-hidden="true"><path d="M3 27 L1 9 L12 17 L20 4 L28 17 L39 9 L37 27 Z" fill="none" stroke="#4da3ff" stroke-width="2.4"/><rect x="3" y="28.5" width="34" height="3.6" rx="1.8" fill="#4da3ff"/></svg></div>
+            <h3>Pro</h3>
+            <p class="tier-cap" data-i18n="cards_pro_cap">Cap · 556 cards</p>
+            <p class="tier-src" data-i18n="cards_src_pro">Paid mint only · 25% of paid draws.</p>
+            <p class="tier-perk"><span class="planned-badge" data-i18n="cards_perk_badge">Planned</span><span data-i18n="cards_perk_pro">A larger head-start bonus in future heats for card holders.</span></p>
+          </article>
+          <article class="tier-card nitro">
+            <div class="tier-art"><svg width="52" height="44" viewBox="0 0 40 34" aria-hidden="true"><path d="M3 27 L1 9 L12 17 L20 4 L28 17 L39 9 L37 27 Z" fill="none" stroke="#ff8c42" stroke-width="2.4"/><rect x="3" y="28.5" width="34" height="3.6" rx="1.8" fill="#ff8c42"/></svg></div>
+            <h3>Nitro</h3>
+            <p class="tier-cap" data-i18n="cards_nitro_cap">Cap · 244 cards</p>
+            <p class="tier-src" data-i18n="cards_src_nitro">Paid mint only · 11% of paid draws.</p>
+            <p class="tier-perk"><span class="planned-badge" data-i18n="cards_perk_badge">Planned</span><span data-i18n="cards_perk_nitro">A major head-start bonus in future heats for card holders.</span></p>
+          </article>
+          <article class="tier-card champ">
+            <div class="tier-art"><svg width="52" height="44" viewBox="0 0 40 34" aria-hidden="true"><path d="M3 27 L1 9 L12 17 L20 4 L28 17 L39 9 L37 27 Z" fill="#f6b81e" stroke="#b97f06" stroke-width="1.5"/><rect x="3" y="28.5" width="34" height="3.6" rx="1.8" fill="#f6b81e"/></svg></div>
+            <h3>Champion</h3>
+            <p class="tier-cap" data-i18n="cards_champ_cap">Cap · 89 cards</p>
+            <p class="tier-src" data-i18n="cards_src_champ">Paid mint only · 4% of paid draws. The rarest card.</p>
+            <p class="tier-perk"><span class="planned-badge" data-i18n="cards_perk_badge">Planned</span><span data-i18n="cards_perk_champ">The biggest head-start bonus in future heats for card holders.</span></p>
+          </article>
+        </div>
+        <div class="lanes">
+          <article class="lane">
+            <span class="lane-tag" data-i18n="cards_free_tag">Free mint lane</span>
+            <p class="lane-price">FREE <small data-i18n="rookie_price_small">· 0 BNB</small></p>
+            <p class="lane-sub" data-i18n="cards_free_sub">For Binance Agent ID holders. Every free card is a ROOKIE.</p>
+            <ul>
+              <li data-i18n="cards_free_li1">Requires holding a Binance Agent ID (.ai NFT)</li>
+              <li data-i18n="cards_free_li2">Total free quota: 500 cards</li>
+              <li data-i18n="cards_free_li3">Max 1 free card per wallet</li>
+              <li data-i18n="cards_free_li4">Always a ROOKIE tier card</li>
+            </ul>
+            <button class="btn disabled" type="button" disabled aria-disabled="true" data-i18n="cards_cta_free">Free mint — opens at launch</button>
+          </article>
+          <article class="lane pro">
+            <span class="lane-tag" data-i18n="cards_paid_tag">Paid mint lane</span>
+            <p class="lane-price">0.001 <small>BNB</small></p>
+            <p class="lane-sub" data-i18n="cards_paid_sub">Exactly 0.001 BNB per card. The higher tiers realistically only come from here.</p>
+            <ul>
+              <li data-i18n="cards_paid_li1">Exactly 0.001 BNB per mint</li>
+              <li data-i18n="cards_paid_li2">Max 5 cards per wallet in total, across both lanes</li>
+              <li data-i18n="cards_paid_li3">Random tier: Rookie 60% / Pro 25% / Nitro 11% / Champion 4%</li>
+              <li data-i18n="cards_paid_li4">Tier caps enforced on-chain (1,333 / 556 / 244 / 89)</li>
+            </ul>
+            <button class="btn disabled" type="button" disabled aria-disabled="true" data-i18n="cards_cta_paid">Paid mint — opens at launch</button>
+          </article>
+        </div>
+        <p class="parallel-note" data-i18n="cards_planned_note"><b>Straight up:</b> the head-start perk is planned for future heats and is not live yet — the cards launch as collectibles first, and the perk will be announced before it ever takes effect.</p>
+        <p class="status-line" style="margin-top:16px" data-i18n="cards_status">Status: the Crown Racer Cards contract is not deployed yet. Minting is not open and there is no official contract address — the address is published at launch.</p>
+        <div class="prompt-card cards-prompt">
+          <div class="prompt-head">
+            <h3 data-i18n="cards_tpl_t">Agent prompt · Mint Crown Racer Cards</h3>
+            <button class="copy-btn" type="button" data-copy="tplnft" data-i18n="copy_btn">Copy prompt</button>
+          </div>
+          <pre id="tplnft">You are my Crown Race agent on BNB Chain (crownrace.site). Crown Racer Cards NFT contract: [published at launch]. Mint for my wallet — pick ONE lane: FREE: if my wallet holds a Binance Agent ID (.ai NFT), mint ONE free card (0 BNB, max 1 per wallet, always a ROOKIE card; total free quota 500). PAID: mint [1–5] cards at exactly 0.001 BNB each (max 5 per wallet across both lanes; tier is random — Rookie 60% / Pro 25% / Nitro 11% / Champion 4%). Report back: the tx hash(es) and the tier of each card I received.</pre>
         </div>
       </section>
 
@@ -864,6 +969,13 @@
             </div>
             <pre id="tpl4">You are my Crown Race racing agent on BNB Chain (crownrace.site). Contract: [published at launch]. Buy ONE Nitro boost for my racer [ID]: +2 steps for 0.00015 BNB, +7 steps for 0.0005 BNB, or +20 steps for 0.0015 BNB — use the tier I name, no other. Report back: the tx hash and my racer's new position out of 100.</pre>
           </div>
+          <div class="prompt-card">
+            <div class="prompt-head">
+              <h3 data-i18n="tpl5_t">5 · Check the prize after settle</h3>
+              <button class="copy-btn" type="button" data-copy="tpl5" data-i18n="copy_btn">Copy prompt</button>
+            </div>
+            <pre id="tpl5">You are my Crown Race racing agent on BNB Chain (crownrace.site). Contract: [published at launch]. After the current heat settles, read the on-chain champion, prize and prizePaid records for that heat. Prizes are NOT paid by the contract: the project pays the champion's prize (50% of the pool) manually within 24 hours of settlement and flags it paid on-chain via markPrizePaid. Report back: whether my wallet is the champion, the recorded prize amount, and whether prizePaid is marked true.</pre>
+          </div>
         </div>
       </section>
 
@@ -890,7 +1002,7 @@
         <div class="faq-list">
           <details>
             <summary data-i18n="q1">What is Crown Race?</summary>
-            <p data-i18n="a1">Crown Race is an on-chain racing game on BNB Chain. Racers advance along a 100-step track toward a golden crown in weekly heats. You enter a racer, move it forward once a day for free (1–6 steps per move), optionally buy Nitro for instant extra steps, and race everyone else to step 100. The winner of each heat receives 50% of that heat's prize pool, paid automatically by the smart contract.</p>
+            <p data-i18n="a1">Crown Race is an on-chain racing game on BNB Chain. Racers advance along a 100-step track toward a golden crown in weekly heats. You enter a racer, move it forward once a day for free (1–6 steps per move), optionally buy Nitro for instant extra steps, and race everyone else to step 100. The winner of each heat earns a prize of 50% of that heat's prize pool, paid by the project within 24 hours of settlement.</p>
           </details>
           <details>
             <summary data-i18n="q2">Who can race?</summary>
@@ -910,7 +1022,7 @@
           </details>
           <details>
             <summary data-i18n="q6">How and when are prizes paid?</summary>
-            <p data-i18n="a6">Automatically, by the smart contract, when the heat settles. A heat runs <b>Monday 00:00 UTC to Monday 00:00 UTC</b> and ends early the moment a racer crosses step 100. Settling is permissionless — anyone can call it — and in that same transaction the contract sends <b>50% of the pool to the winner</b> and 50% to the project. The pool is funded by Pro entries and Nitro purchases. Winner = first finisher, or farthest along at heat end; ties go to whoever reached that step first. No manual payouts and no promises outside the contract.</p>
+            <p data-i18n="a6">Manually, by the project, within 24 hours of settlement. A heat runs <b>Monday 00:00 UTC to Monday 00:00 UTC</b> and ends early the moment a racer crosses step 100. Settling is permissionless — anyone can call it — and the settle records the champion and their prize entitlement (<b>50% of the pool</b>) on-chain while the full pool goes to the project. The project then pays the prize to the champion's wallet within 24 hours and marks it paid on-chain, so anyone can verify the payout from the champion, prize and prizePaid records. The pool is funded by Pro entries and Nitro purchases. Winner = first finisher, or farthest along at heat end; ties go to whoever reached that step first.</p>
           </details>
           <details>
             <summary data-i18n="q7">When does Crown Race launch?</summary>
@@ -918,7 +1030,7 @@
           </details>
           <details>
             <summary data-i18n="q8">Is there a Crown Race token?</summary>
-            <p data-i18n="a8"><b>No.</b> Crown Race has no token and no plans for one. The game runs on BNB entry fees and Nitro only, and winners are paid in BNB by the contract.</p>
+            <p data-i18n="a8"><b>No.</b> Crown Race has no token and no plans for one. The game runs on BNB entry fees and Nitro only, and winners are paid in BNB by the project.</p>
           </details>
         </div>
       </section>
@@ -945,12 +1057,12 @@
       /* ================= i18n ================= */
       var I18N = {
         zh: {
-          nav_track: "赛道", nav_enter: "参赛", nav_move: "移动与氮气", nav_prizes: "奖金", nav_agent: "智能体", nav_faq: "常见问题",
+          nav_track: "赛道", nav_enter: "参赛", nav_move: "移动与氮气", nav_prizes: "奖金", nav_cards: "卡牌", nav_agent: "智能体", nav_faq: "常见问题",
           badge_prelaunch: "预发布 — 首轮比赛于上线时开启",
           tagline: "为皇冠而赛",
-          hero_sub: "一场专为币安 Agent ID 持有者打造的 BNB Chain 链上竞速赛，共 100 步。免费参赛或选择 Pro，每天免费移动一次，与所有人竞速冲向金色皇冠。率先到达第 100 步——或在比赛结束时走得最远——即可赢得奖池的 50%，由智能合约自动支付。",
+          hero_sub: "一场专为币安 Agent ID 持有者打造的 BNB Chain 链上竞速赛，共 100 步。免费参赛或选择 Pro，每天免费移动一次，与所有人竞速冲向金色皇冠。率先到达第 100 步——或在比赛结束时走得最远——即可赢得奖池 50% 的奖金——结算时记录在链上，由项目方在 24 小时内支付。",
           cta_rookie: "新手参赛 — 上线时开放", cta_pro: "Pro 参赛 — 上线时开放", cta_agent: "用你的 AI 智能体参赛 ↓",
-          chip_steps: "从起点到皇冠共 100 步", chip_heat_b: "每周一轮", chip_heat: "周一 00:00 UTC → 下周一 00:00 UTC", chip_cap: "每轮最多 2,222 名选手", chip_prize: "奖池的 50% 归冠军，由合约支付", chip_move: "每日移动，每位选手每天免费",
+          chip_steps: "从起点到皇冠共 100 步", chip_heat_b: "每周一轮", chip_heat: "周一 00:00 UTC → 下周一 00:00 UTC", chip_cap: "每轮最多 2,222 名选手", chip_prize: "奖池的 50% 归冠军，项目方 24 小时内支付", chip_move: "每日移动，每位选手每天免费",
           status_line: "状态：Crown Race 合约尚未部署。目前没有比赛在进行，参赛尚未开放，也没有任何可转账的合约地址——任何声称相反的都不是我们。参赛将在第 1 轮比赛上线时开启。",
           track_kicker: "赛道", track_title: "100 步。一顶皇冠。",
           track_sub: "每位选手从起跑线出发，沿着金色赛道线一步步前进。第 100 步就是皇冠。赛道没有捷径——只有每日移动和氮气加速。",
@@ -967,7 +1079,7 @@
           how_kicker: "一轮比赛如何进行", how_title: "参赛。每天移动。夺取皇冠。",
           how1_t: "参加比赛", how1_p: "每周比赛开启时，免费以新手身份参赛，或以每位 0.0007 BNB 参加 Pro。两条通道同时开放——Pro 永远不会被锁定在免费通道之后。",
           how2_t: "每天移动", how2_p: "每位已参赛选手每天可免费移动一次。每次移动前进 1–6 步，由链上抽取。坚持每天出现——在 100 步的赛程里，稳定性胜过运气。可选的氮气可即时购买额外步数。",
-          how3_t: "在结算时获胜", how3_p: "当有人跨过第 100 步，或到下周一 00:00 UTC 时，比赛结束。任何人都可以调用结算——合约自动将奖池的 50% 支付给冠军，并将其载入冠军殿堂。",
+          how3_t: "在结算时获胜", how3_p: "当有人跨过第 100 步，或到下周一 00:00 UTC 时，比赛结束。任何人都可以调用结算——冠军及其奖金（奖池的 50%）会被记录在链上，项目方在 24 小时内支付奖金并在链上标记为已支付，冠军载入冠军殿堂。",
           enter_kicker: "参赛 — 两条通道，并行开放", enter_title: "新手还是 Pro。你来选。",
           enter_sub: "两条通道从每轮比赛的第一分钟起同时开放，且都要求参赛钱包持有币安 Agent ID（.ai NFT）。每轮比赛总共最多接受 2,222 名选手。",
           rookie_tag: "新手通道", rookie_price_small: "· 0 BNB", rookie_sub: "纯粹的每日坚持通道。不花一分钱，赢得同一顶皇冠。",
@@ -983,23 +1095,43 @@
           nitro_t: "氮气 — 可选的即时步数", nitro_p: "在最后冲刺阶段落后了？氮气可让你的选手在比赛期间随时即时前进。每笔氮气购买都进入本轮奖池。",
           nitro_th1: "加速", nitro_th2: "步数", nitro_th3: "价格",
           nitro_honest: "氮气是加速器，永远不是必需品。每天免费移动的新手完全可以——也应该——击败只出现一次的 Pro。",
-          prize_kicker: "轮次与奖金", prize_title: "由合约支付冠军。没有其他人能碰奖池。",
-          prize_sub: "奖池由比赛期间的 Pro 参赛费和氮气购买注资。比赛结算时，智能合约本身将冠军的份额直接发送——自动完成，就在同一笔交易中。",
-          split_winner: "冠军 · 50%", split_project: "项目方 · 50%",
+          prize_kicker: "轮次与奖金", prize_title: "冠军链上加冕。奖金由项目方支付。",
+          prize_sub: "奖池由比赛期间的 Pro 参赛费和氮气购买注资。比赛结算时，合约将冠军及其奖金权利（奖池的 50%）记录在链上，全部奖池归项目方。项目方随后在结算后 24 小时内手动支付冠军奖金，并在链上标记为已支付，任何人都可以验证。",
+          split_winner: "冠军奖金 · 50%", split_project: "项目方份额 · 50%",
           prize_c1_t: "谁获胜", prize_c1_p: "率先跨过第 100 步的选手立即获胜。若无人完赛，则比赛结束时走得最远的选手获胜。平局时，先到达该步数的选手胜。",
-          prize_c2_t: "如何支付", prize_c2_p: "结算无许可——比赛结束后任何人都可以调用。合约将奖池的 50% 支付给冠军，50% 归项目方。没有人工打款，没有等待，没有合约之外的承诺。",
+          prize_c2_t: "如何支付", prize_c2_p: "结算无许可——比赛结束后任何人都可以调用。结算将冠军和奖金（奖池的 50%）记录在链上；项目方随后在 24 小时内将奖金发送到冠军钱包，并在链上标记为已支付（prizePaid）。没有账外承诺——你可自行核查 champion、prize 和 prizePaid 记录。",
           prize_c3_t: "永久加冕", prize_c3_p: "每位冠军都会被记录在链上，并列入下方的冠军殿堂。Crown Race 没有代币——皇冠和 BNB 就是全部奖品。",
-          heat_1_b: "比赛开启", heat_1_s: "周一 00:00 UTC — 参赛开放", heat_2_b: "整周", heat_2_s: "每天免费移动 + 随时氮气", heat_3_b: "提前结束", heat_3_s: "有选手跨过第 100 步的那一刻比赛结束", heat_4_b: "比赛关闭", heat_4_s: "下周一 00:00 UTC — 结算支付冠军",
+          heat_1_b: "比赛开启", heat_1_s: "周一 00:00 UTC — 参赛开放", heat_2_b: "整周", heat_2_s: "每天免费移动 + 随时氮气", heat_3_b: "提前结束", heat_3_s: "有选手跨过第 100 步的那一刻比赛结束", heat_4_b: "比赛关闭", heat_4_s: "下周一 00:00 UTC — 结算记录冠军；奖金 24 小时内支付",
           agent_kicker: "用你的 AI 智能体参赛", agent_title: "你的智能体可以跑完整个比赛",
           agent_sub: "Crown Race 的每个动作都是智能体可以执行的简单合约调用——每日移动花费 0 BNB，因此智能体可以按计划替你参赛而不花任何钱。复制一个模板，粘贴给你的智能体，并将钱包信息换成你自己的。",
           agent_note: "合约地址：上线时公布——以下模板除该地址外均为最终版。",
-          tpl1_t: "1 · 新手参赛（免费）", tpl2_t: "2 · Pro 参赛（0.0007 BNB）", tpl3_t: "3 · 每日移动（免费，每天）", tpl4_t: "4 · 氮气加速（付费，可选）",
+          cards_kicker: "车手卡牌 · NFT", cards_title: "收集你的车手卡牌",
+          cards_sub: "Crown Race 的配套 ERC-721 收藏系列，运行在 BNB Chain 上：共 2,222 张卡，四个等级。两条铸造通道并行运行——免费通道永远不会挡住付费通道。",
+          cards_rookie_cap: "上限 · 1,333 张", cards_pro_cap: "上限 · 556 张", cards_nitro_cap: "上限 · 244 张", cards_champ_cap: "上限 · 89 张",
+          cards_src_rookie: "免费铸造的卡——也是付费抽取的 60%。",
+          cards_src_pro: "仅付费铸造 · 占付费抽取的 25%。",
+          cards_src_nitro: "仅付费铸造 · 占付费抽取的 11%。",
+          cards_src_champ: "仅付费铸造 · 占付费抽取的 4%。最稀有的卡。",
+          cards_perk_badge: "规划中",
+          cards_perk_rookie: "卡牌持有者在未来轮次中获得起步领先奖励。",
+          cards_perk_pro: "卡牌持有者在未来轮次中获得更大的起步领先奖励。",
+          cards_perk_nitro: "卡牌持有者在未来轮次中获得大幅起步领先奖励。",
+          cards_perk_champ: "卡牌持有者在未来轮次中获得最大的起步领先奖励。",
+          cards_free_tag: "免费铸造通道", cards_free_sub: "为币安 Agent ID 持有者准备。每张免费卡都是 ROOKIE。",
+          cards_free_li1: "需持有币安 Agent ID（.ai NFT）", cards_free_li2: "免费总配额：500 张", cards_free_li3: "每钱包最多 1 张免费卡", cards_free_li4: "必为 ROOKIE 等级卡",
+          cards_paid_tag: "付费铸造通道", cards_paid_sub: "每张恰好 0.001 BNB。高级等级现实地只能从这里出。",
+          cards_paid_li1: "每次铸造恰好 0.001 BNB", cards_paid_li2: "两条通道合计每钱包最多 5 张", cards_paid_li3: "等级随机：Rookie 60% / Pro 25% / Nitro 11% / Champion 4%", cards_paid_li4: "等级上限在链上强制执行（1,333 / 556 / 244 / 89）",
+          cards_cta_free: "免费铸造 — 上线时开放", cards_cta_paid: "付费铸造 — 上线时开放",
+          cards_planned_note: "<b>直说：</b>起步领先权益是为未来轮次规划的，尚未上线——卡牌先以收藏品形式推出，权益在生效前会另行公布。",
+          cards_status: "状态：Crown Racer Cards 合约尚未部署。铸造尚未开放，也没有官方合约地址——地址将在上线时公布。",
+          cards_tpl_t: "智能体提示词 · 铸造车手卡牌",
+          tpl1_t: "1 · 新手参赛（免费）", tpl2_t: "2 · Pro 参赛（0.0007 BNB）", tpl3_t: "3 · 每日移动（免费，每天）", tpl4_t: "4 · 氮气加速（付费，可选）", tpl5_t: "5 · 结算后核查奖金",
           copy_btn: "复制提示词", copied: "已复制 ✓",
           champ_kicker: "冠军殿堂", champ_title: "每位冠军，链上加冕", champ_empty_t: "暂无冠军",
           champ_empty_p: "第一位冠军将在第 1 轮比赛后加冕。赢得一轮比赛——跨过第 100 步，或在结束时走得最远——你的钱包将被永久记录在这里和链上。",
           faq_title: "问题，直说答案",
           q1: "什么是 Crown Race？",
-          a1: "Crown Race 是 BNB Chain 上的一款链上竞速游戏。选手在每周一轮的比赛中，沿着 100 步的赛道向金色皇冠前进。你登记一名选手，每天免费移动一次（每次 1–6 步），可选择购买氮气即时增加步数，与所有人竞速冲向第 100 步。每轮冠军获得该轮奖池的 50%，由智能合约自动支付。",
+          a1: "Crown Race 是 BNB Chain 上的一款链上竞速游戏。选手在每周一轮的比赛中，沿着 100 步的赛道向金色皇冠前进。你登记一名选手，每天免费移动一次（每次 1–6 步），可选择购买氮气即时增加步数，与所有人竞速冲向第 100 步。每轮冠军获得该轮奖池 50% 的奖金，由项目方在结算后 24 小时内支付。",
           q2: "谁可以参赛？",
           a2: "任何钱包持有<b>币安 Agent ID（.ai NFT）</b>的人都可以。参赛时会在链上验证 Agent ID，两条通道都一样：新手每轮每钱包 1 名选手，Pro 最多 3 名。每轮参赛总上限为 2,222 名选手。",
           q3: "新手参赛和 Pro 参赛有什么区别？",
@@ -1009,11 +1141,11 @@
           q5: "什么是氮气？我必须用它才能赢吗？",
           a5: "氮气是一种可选的付费加速，可让你的选手即时前进：<b>+2 步 0.00015 BNB、+7 步 0.0005 BNB、+20 步 0.0015 BNB</b>。你永远不需要它——免费每日移动才是核心玩法。在 7 天的一轮比赛中，每天移动的选手可免费前进 7–42 步，再加上 Pro 的领先出发，能走很远。氮气用于追赶和最后冲刺的争夺。所有氮气付款都进入本轮奖池。",
           q6: "奖金如何、何时支付？",
-          a6: "由智能合约在比赛结算时自动支付。一轮比赛从<b>周一 00:00 UTC 到下周一 00:00 UTC</b>，当有选手跨过第 100 步时会提前结束。结算无许可——任何人都可以调用——就在同一笔交易中，合约将<b>奖池的 50% 发送给冠军</b>，50% 归项目方。奖池由 Pro 参赛费和氮气购买注资。冠军 = 率先完赛者，或比赛结束时走得最远者；平局时先到达该步数者胜。没有人工打款，没有合约之外的承诺。",
+          a6: "由项目方在结算后 24 小时内手动支付。一轮比赛从<b>周一 00:00 UTC 到下周一 00:00 UTC</b>，当有选手跨过第 100 步时会提前结束。结算无许可——任何人都可以调用——结算会将冠军及其奖金权利（<b>奖池的 50%</b>）记录在链上，全部奖池归项目方。项目方随后在 24 小时内将奖金支付到冠军钱包，并在链上标记为已支付——任何人都可以从 champion、prize 和 prizePaid 记录中验证。奖池由 Pro 参赛费和氮气购买注资。冠军 = 率先完赛者，或比赛结束时走得最远者；平局时先到达该步数者胜。",
           q7: "Crown Race 何时上线？",
           a7: "上线日期：<b>待公布</b>。合约尚未部署，参赛尚未开放，任何地方都没有官方合约地址——在我们公布之前，任何声称是 Crown Race 的地址都是假的。首轮比赛将于上线时开启；请在 X 上关注 <b>@PlayCrownRace</b> 获取公告。",
           q8: "Crown Race 有代币吗？",
-          a8: "<b>没有。</b>Crown Race 没有代币，也没有发币计划。游戏仅靠 BNB 参赛费和氮气运行，冠军由合约以 BNB 支付。",
+          a8: "<b>没有。</b>Crown Race 没有代币，也没有发币计划。游戏仅靠 BNB 参赛费和氮气运行，冠军由项目方以 BNB 支付。",
           foot_tag: "为皇冠而赛 — BNB Chain 上 100 步的链上竞速。为币安 Agent ID 持有者而建。",
           foot_pre: "预发布：合约尚未部署。首轮比赛于上线时开启。",
           foot_faq: "常见问题", foot_agent: "智能体提示词"
@@ -1026,13 +1158,17 @@
           tpl1: "你是我的 Crown Race 竞速智能体，在 BNB Chain 上运行（crownrace.site）。合约地址：[上线时公布]。我的钱包持有币安 Agent ID（.ai NFT）。请为本周比赛登记 ONE 名免费新手选手（0 BNB）。完成后回复：交易哈希，并确认我的选手从第 0 步出发。",
           tpl2: "你是我的 Crown Race 竞速智能体，在 BNB Chain 上运行（crownrace.site）。合约地址：[上线时公布]。我的钱包持有币安 Agent ID（.ai NFT）。请为本周比赛登记 [1–3] 名 Pro 选手，每位恰好 0.0007 BNB。每位 Pro 选手从第 5 步出发。完成后回复：交易哈希和我的选手 ID。",
           tpl3: "你是我的 Crown Race 竞速智能体，在 BNB Chain 上运行（crownrace.site）。合约地址：[上线时公布]。在本轮比赛期间，每天为我的每一位选手调用一次免费每日移动（0 BNB）。每次移动后回复：选手 ID、抽到的步数（1–6）以及 100 步中的新位置。比赛结束或有选手跨过第 100 步时停止。",
-          tpl4: "你是我的 Crown Race 竞速智能体，在 BNB Chain 上运行（crownrace.site）。合约地址：[上线时公布]。请为我的选手 [ID] 购买 ONE 次氮气加速：+2 步 0.00015 BNB、+7 步 0.0005 BNB 或 +20 步 0.0015 BNB——只使用我指定的档位，不要其他。完成后回复：交易哈希和我的选手在 100 步中的新位置。"
+          tpl4: "你是我的 Crown Race 竞速智能体，在 BNB Chain 上运行（crownrace.site）。合约地址：[上线时公布]。请为我的选手 [ID] 购买 ONE 次氮气加速：+2 步 0.00015 BNB、+7 步 0.0005 BNB 或 +20 步 0.0015 BNB——只使用我指定的档位，不要其他。完成后回复：交易哈希和我的选手在 100 步中的新位置。",
+          tpl5: "你是我的 Crown Race 竞速智能体，在 BNB Chain 上运行（crownrace.site）。合约地址：[上线时公布]。本轮比赛结算后，请读取该轮链上的 champion、prize 和 prizePaid 记录。奖金并非由合约支付：项目方会在结算后 24 小时内手动将冠军奖金（奖池的 50%）支付给冠军，并通过 markPrizePaid 在链上标记为已支付。完成后回复：我的钱包是否为冠军、记录的奖金金额，以及 prizePaid 是否标记为 true。",
+          tplnft: "你是我的 Crown Race 智能体，在 BNB Chain 上运行（crownrace.site）。Crown Racer Cards NFT 合约地址：[上线时公布]。请为我的钱包铸造——只选一条通道：免费通道：如果我的钱包持有币安 Agent ID（.ai NFT），铸造 ONE 张免费卡（0 BNB，每钱包最多 1 张，必为 ROOKIE 卡；免费总配额 500 张）。付费通道：以每张恰好 0.001 BNB 铸造 [1–5] 张（两条通道合计每钱包最多 5 张；等级随机——Rookie 60% / Pro 25% / Nitro 11% / Champion 4%）。完成后回复：交易哈希以及我收到的每张卡的等级。"
         },
         en_tpl: {
           tpl1: "You are my Crown Race racing agent on BNB Chain (crownrace.site). Contract: [published at launch]. My wallet holds a Binance Agent ID (.ai NFT). Enter the current weekly heat with ONE free Rookie racer (0 BNB). Report back: the tx hash and confirmation that my racer starts at step 0.",
           tpl2: "You are my Crown Race racing agent on BNB Chain (crownrace.site). Contract: [published at launch]. My wallet holds a Binance Agent ID (.ai NFT). Enter the current weekly heat with [1–3] Pro racers at exactly 0.0007 BNB each. Each Pro racer starts at step 5. Report back: the tx hash(es) and my racer IDs.",
           tpl3: "You are my Crown Race racing agent on BNB Chain (crownrace.site). Contract: [published at launch]. Every day during the current heat, call the free daily move (0 BNB) once for EACH of my racers. After each move, report: racer ID, steps drawn (1–6), and new position out of 100. Stop when the heat ends or a racer crosses step 100.",
-          tpl4: "You are my Crown Race racing agent on BNB Chain (crownrace.site). Contract: [published at launch]. Buy ONE Nitro boost for my racer [ID]: +2 steps for 0.00015 BNB, +7 steps for 0.0005 BNB, or +20 steps for 0.0015 BNB — use the tier I name, no other. Report back: the tx hash and my racer's new position out of 100."
+          tpl4: "You are my Crown Race racing agent on BNB Chain (crownrace.site). Contract: [published at launch]. Buy ONE Nitro boost for my racer [ID]: +2 steps for 0.00015 BNB, +7 steps for 0.0005 BNB, or +20 steps for 0.0015 BNB — use the tier I name, no other. Report back: the tx hash and my racer's new position out of 100.",
+          tpl5: "You are my Crown Race racing agent on BNB Chain (crownrace.site). Contract: [published at launch]. After the current heat settles, read the on-chain champion, prize and prizePaid records for that heat. Prizes are NOT paid by the contract: the project pays the champion's prize (50% of the pool) manually within 24 hours of settlement and flags it paid on-chain via markPrizePaid. Report back: whether my wallet is the champion, the recorded prize amount, and whether prizePaid is marked true.",
+          tplnft: "You are my Crown Race agent on BNB Chain (crownrace.site). Crown Racer Cards NFT contract: [published at launch]. Mint for my wallet — pick ONE lane: FREE: if my wallet holds a Binance Agent ID (.ai NFT), mint ONE free card (0 BNB, max 1 per wallet, always a ROOKIE card; total free quota 500). PAID: mint [1–5] cards at exactly 0.001 BNB each (max 5 per wallet across both lanes; tier is random — Rookie 60% / Pro 25% / Nitro 11% / Champion 4%). Report back: the tx hash(es) and the tier of each card I received."
         }
       };
 
@@ -1122,9 +1258,9 @@
           log_day30: "Day 30 reached — the heat ends. Farthest racer takes the crown.",
           champ_you: "👑 You are the champion!",
           champ_bot: "👑 {n} takes the crown",
-          note_you_win: "You crossed the line first — the crown is yours. In a real heat the contract would pay you 50% of the pool, automatically.",
-          note_you_far: "Nobody crossed step 100, but you stood farthest after Day 30 — the crown is yours, and the contract would pay you 50% of the pool.",
-          note_bot_win: "{n} crossed step 100 first. You finished #{r} at step {p}. In a real heat the contract pays the winner 50% of the pool — automatically.",
+          note_you_win: "You crossed the line first — the crown is yours. In a real heat, your prize (50% of the pool) is recorded on-chain at settle and paid by the project within 24 hours.",
+          note_you_far: "Nobody crossed step 100, but you stood farthest after Day 30 — the crown is yours, and your prize (50% of the pool) would be recorded on-chain and paid by the project within 24 hours.",
+          note_bot_win: "{n} crossed step 100 first. You finished #{r} at step {p}. In a real heat the winner's prize (50% of the pool) is recorded on-chain and paid by the project within 24 hours.",
           note_bot_far: "Nobody finished. {n} stood farthest after Day 30 and takes the crown. You finished #{r} at step {p}.",
           payout: "Prize pool: {pool} CR → winner receives 50% = {win} CR",
           payout_you: "Prize pool: {pool} CR → you receive 50% = +{win} CR. Your credits: {cr} CR",
@@ -1149,9 +1285,9 @@
           log_day30: "已到第 30 天 — 比赛结束。走得最远的选手夺冠。",
           champ_you: "👑 你是冠军！",
           champ_bot: "👑 {n} 夺得皇冠",
-          note_you_win: "你率先冲过终点 — 皇冠属于你。在真实比赛中，合约会自动将奖池的 50% 支付给你。",
-          note_you_far: "没有人跨过第 100 步，但你在第 30 天后走得最远 — 皇冠属于你，合约会将奖池的 50% 支付给你。",
-          note_bot_win: "{n} 率先跨过第 100 步。你以第 {p} 步获得第 #{r} 名。在真实比赛中，合约会自动将奖池的 50% 支付给冠军。",
+          note_you_win: "你率先冲过终点 — 皇冠属于你。在真实比赛中，你的奖金（奖池的 50%）会在结算时记录在链上，并由项目方在 24 小时内支付。",
+          note_you_far: "没有人跨过第 100 步，但你在第 30 天后走得最远 — 皇冠属于你，你的奖金（奖池的 50%）会被记录在链上，并由项目方在 24 小时内支付。",
+          note_bot_win: "{n} 率先跨过第 100 步。你以第 {p} 步获得第 #{r} 名。在真实比赛中，冠军的奖金（奖池的 50%）会记录在链上，并由项目方在 24 小时内支付。",
           note_bot_far: "无人完赛。{n} 在第 30 天后走得最远，夺得皇冠。你以第 {p} 步获得第 #{r} 名。",
           payout: "奖池：{pool} CR → 冠军获得 50% = {win} CR",
           payout_you: "奖池：{pool} CR → 你获得 50% = +{win} CR。你的点数：{cr} CR",

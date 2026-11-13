@@ -20,10 +20,14 @@ pragma solidity ^0.8.26;
 ///         is 100 steps; reaching 100 finishes the heat early. When a heat
 ///         ends (or is finished), anyone can settleHeat(): the winner (the
 ///         finisher, else the farthest racer, ties broken by who reached
-///         the position first) receives exactly 50% of the heat pool — all
-///         Pro entry fees and Nitro payments of that heat — paid
-///         automatically by the contract; the other 50% is credited to the
-///         owner balance. No own token.
+///         the position first) is recorded on-chain as the champion, with
+///         a prize entitlement of exactly 50% of the heat pool — all Pro
+///         entry fees and Nitro payments of that heat. The contract does
+///         NOT pay the prize itself: the full pool (100%) is credited to
+///         the owner balance, the owner pays the champion's 50% prize
+///         manually (within 24 hours of settlement), and then flags the
+///         heat with markPrizePaid() so the payment duty and its
+///         fulfilment are publicly auditable on-chain. No own token.
 /// @dev The contract is named CrownRaceGame to stay distinct from the legacy
 ///      CrownRace contract. Agent ID registry address is a constructor
 ///      argument: on BNB Chain mainnet deploy with
@@ -77,6 +81,8 @@ contract CrownRaceGame {
         uint256 finisherRacer; // racerId that reached step 100 (0 = none)
         uint256 finishTime;
         address champion; // winner recorded at settlement (0 until settled / if no racers)
+        uint256 prize; // champion's prize entitlement recorded at settlement: 50% of pool, paid manually by the owner
+        bool prizePaid; // owner flags true after paying the champion manually (see markPrizePaid)
         bool settled;
     }
 
@@ -88,10 +94,12 @@ contract CrownRaceGame {
     mapping(uint256 => mapping(address => uint256)) public proEntries; // per heat, per wallet
     mapping(address => mapping(uint256 => uint256[])) private _racersOf; // wallet -> heatId -> racerIds
 
-    /// @notice Owner's withdrawable balance: the owner's 50% shares of
-    ///         SETTLED heat pools only. Unsettled heat pools are NEVER part
-    ///         of this balance, so withdraw() cannot touch them, and one
-    ///         heat's money can never leak into another heat's payout.
+    /// @notice Owner's withdrawable balance: 100% of SETTLED heat pools.
+    ///         Unsettled heat pools are NEVER part of this balance, so
+    ///         withdraw() cannot touch a running heat, and one heat's money
+    ///         can never leak into another heat's accounting. From this
+    ///         balance the owner pays each champion's recorded 50% prize
+    ///         manually (see the `prize` field of each settled heat).
     uint256 public ownerBalance;
 
     event RacerEntered(uint256 indexed heatId, uint256 indexed racerId, address indexed owner, bool pro);
@@ -99,6 +107,7 @@ contract CrownRaceGame {
     event NitroUsed(uint256 indexed heatId, uint256 indexed racerId, uint8 tier, uint256 steps, uint256 position);
     event Finished(uint256 indexed heatId, uint256 indexed racerId, address indexed owner, uint256 finishTime);
     event HeatSettled(uint256 indexed heatId, address indexed champion, uint256 prize, uint256 ownerShare);
+    event PrizePaid(uint256 indexed heatId, address indexed champion, uint256 prize);
     event EntryOpenSet(bool open);
     event Withdrawn(address indexed to, uint256 amount);
 
@@ -262,11 +271,14 @@ contract CrownRaceGame {
     /// @notice Settle a heat once it has ended (Monday 00:00 UTC) or a
     ///         racer has finished it early. Permissionless. The winner —
     ///         the finisher if any, otherwise the farthest racer with the
-    ///         earliest-reach tie-break — receives exactly 50% of the heat
-    ///         pool, paid automatically; the other 50% is credited to the
-    ///         owner balance. A heat with no racers or a zero pool settles
-    ///         as a no-op (the champion is still recorded when racers
-    ///         exist) and can never be settled twice.
+    ///         earliest-reach tie-break — is recorded as the champion,
+    ///         together with a prize entitlement of exactly 50% of the
+    ///         heat pool. The contract does NOT transfer the prize: the
+    ///         FULL pool (100%) is credited to the owner balance, and the
+    ///         owner pays the champion's prize manually (within 24 hours)
+    ///         and flags it via markPrizePaid(). A heat with no racers or
+    ///         a zero pool settles as a no-op (the champion is still
+    ///         recorded when racers exist) and can never be settled twice.
     function settleHeat(uint256 heatId) external {
         Heat storage heat = heats[heatId];
         require(!heat.settled, "Already settled");
@@ -284,14 +296,25 @@ contract CrownRaceGame {
         uint256 ownerShare = 0;
         if (winner != address(0) && pool > 0) {
             prize = pool / 2;
-            ownerShare = pool - prize;
+            heat.prize = prize;
+            ownerShare = pool;
             ownerBalance += ownerShare;
         }
         emit HeatSettled(heatId, winner, prize, ownerShare);
-        if (prize > 0) {
-            (bool ok, ) = payable(winner).call{value: prize}("");
-            require(ok, "Prize payment failed");
-        }
+    }
+
+    /// @notice Flag a settled heat's champion prize as paid. The owner
+    ///         calls this AFTER transferring the recorded prize to the
+    ///         champion from their own wallet; the flag and the transfer
+    ///         are both public, so anyone can audit that the duty was met.
+    function markPrizePaid(uint256 heatId) external onlyOwner {
+        Heat storage heat = heats[heatId];
+        require(heat.settled, "Not settled");
+        require(heat.champion != address(0), "No champion");
+        require(heat.prize > 0, "No prize");
+        require(!heat.prizePaid, "Already marked");
+        heat.prizePaid = true;
+        emit PrizePaid(heatId, heat.champion, heat.prize);
     }
 
     // ---------- Views for the website ----------
@@ -355,8 +378,8 @@ contract CrownRaceGame {
         emit EntryOpenSet(open);
     }
 
-    /// @notice Withdraw the owner balance only (settled owner shares).
-    ///         Unsettled heat pools are untouchable here.
+    /// @notice Withdraw the owner balance only (100% of settled heat
+    ///         pools). Unsettled heat pools are untouchable here.
     function withdraw() external onlyOwner {
         uint256 amount = ownerBalance;
         require(amount > 0, "Nothing to withdraw");

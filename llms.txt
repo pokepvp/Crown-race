@@ -11,7 +11,7 @@ PRE-LAUNCH. The game contract (CrownRaceGame) is not deployed yet. Do not attemp
 - enterPro(): paid entry in the project token $CROWN (launching on four.meme), up to 3 racers per wallet per heat. Starts at step 5.
 - move(racerId): free, once per UTC day per racer, advances 1-6 steps. The step draw is derived from on-chain block data and is verifiable after the fact (not VRF-grade).
 - nitro(racerId, tier): optional paid boost in $CROWN: tier 0 = +2 steps, tier 1 = +7 steps, tier 2 = +20 steps.
-- settleHeat(heatId): permissionless after the heat ends or once a racer finishes at step 100. The winner (first finisher, else farthest, ties by earliest reach) receives 50% of the heat pool automatically; 50% goes to the project.
+- settleHeat(heatId): permissionless after the heat ends or once a racer finishes at step 100. The winner (first finisher, else farthest, ties by earliest reach) is recorded on-chain as the champion, with a prize entitlement of 50% of the heat pool recorded in the contract. The full pool is credited to the project; the champion's prize is paid by the project within 24 hours of settlement and flagged on-chain via markPrizePaid().
 
 ## Token
 $CROWN (BNB Chain, via four.meme) is the in-game currency for Pro entries and Nitro. It can be obtained only by buying it or by earning it from paid play (Pro entry cashback and heat-winner pools). No airdrop.
