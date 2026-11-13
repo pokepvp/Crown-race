@@ -1009,6 +1009,7 @@
             <button class="btn btn-gold" type="button" id="lv-connect" data-i18n="live_connect">Connect wallet</button>
             <span class="live-acct" id="lv-acct"></span>
           </div>
+          <p class="live-msg" id="lv-proof"></p>
           <p class="live-msg" id="lv-msg" aria-live="polite"></p>
           <div id="lv-myracers"></div>
           <div id="lv-settle-wrap"></div>
@@ -1158,8 +1159,10 @@
         <div class="live-stats">
           <span class="gstat"><span data-i18n="cards_minted_l">Minted</span><b><span id="nft-minted">–</span> / 2,222</b></span>
           <span class="gstat"><span data-i18n="cards_freeused_l">Free quota used</span><b><span id="nft-freeused">–</span> / 500</b></span>
+          <span class="gstat"><span data-i18n="cards_remain_l">Supply remaining</span><b><span id="nft-remain">–</span></b></span>
           <span class="gstat"><span data-i18n="cards_open_l">Mint status</span><b id="nft-open">Open</b></span>
         </div>
+        <p class="live-msg" id="nft-proof"></p>
         <p class="live-msg" id="nft-msg" aria-live="polite"></p>
         <div class="prompt-card cards-prompt">
           <div class="prompt-head">
@@ -1369,7 +1372,7 @@
           cards_cta_free: "免费铸造 — 0 BNB", cards_cta_paid: "付费铸造 — 0.001 BNB",
           cards_planned_note: "<b>直说：</b>起步领先权益是为未来轮次规划的，尚未上线——卡牌先以收藏品形式推出，权益在生效前会另行公布。",
           cards_status: "状态：铸造已开放 · LIVE — Crown Racer Cards 已在 BNB Chain 上开放铸造。合约：<a href=\"https://bscscan.com/address/0x7B1ca439312368dE8652b9B5d7A54cA74A884680\" target=\"_blank\" rel=\"noopener\">0x7B1ca439312368dE8652b9B5d7A54cA74A884680</a> — 免费铸造面向 Agent ID 持有者（每钱包最多 1 张），付费铸造恰好 0.001 BNB（每钱包总计最多 5 张）。连接钱包，用上方按钮铸造。",
-          cards_minted_l: "已铸造", cards_freeused_l: "免费名额已用", cards_open_l: "铸造状态",
+          cards_minted_l: "已铸造", cards_freeused_l: "免费名额已用", cards_remain_l: "剩余供应", cards_open_l: "铸造状态",
           cards_tpl_t: "智能体提示词 · 铸造车手卡牌",
           tpl1_t: "1 · 新手参赛（免费）", tpl2_t: "2 · Pro 参赛（0.0007 BNB）", tpl3_t: "3 · 每日移动（免费，每天）", tpl4_t: "4 · 氮气加速（付费，可选）", tpl5_t: "5 · 结算与核查",
           copy_btn: "复制提示词", copied: "已复制 ✓",
@@ -1959,7 +1962,8 @@
       (function () {
         var CONTRACT = "0xd7874cB7ceB9A210B08D80b73728Be4B472A7722";
         var SCAN = "https://bscscan.com/address/" + CONTRACT;
-        var RPC = "https://bsc-dataseed.binance.org";
+        var RPCS = ["https://bsc-dataseed.binance.org", "https://bsc-dataseed1.defibit.io", "https://bsc-dataseed1.ninicoin.io", "https://bsc-rpc.publicnode.com"];
+        var RPC = RPCS[0];
         var SEL = {
           enterRookie: "0xdc4e989e", enterPro: "0x81f0f655",
           move: "0x87cb15f7", nitro: "0xa5d21020",
@@ -2000,8 +2004,8 @@
         function setMsg(html) { var m = $("lv-msg"); if (m) m.innerHTML = html; }
         function short(a) { return a.slice(0, 6) + "…" + a.slice(-4); }
 
-        function rpc(data) {
-          return fetch(RPC, {
+        function rpcOne(url, data) {
+          return fetch(url, {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: CONTRACT, data: data }, "latest"] })
           }).then(function (r) { return r.json(); }).then(function (j) {
@@ -2009,15 +2013,39 @@
             return j.result;
           });
         }
+        function rpc(data) {
+          /* race every endpoint; first valid answer wins */
+          return Promise.any(RPCS.map(function (u) { return rpcOne(u, data); }));
+        }
+        function rpcMax(data) {
+          /* ask every endpoint; keep the largest first word (freshest head) */
+          return Promise.allSettled(RPCS.map(function (u) { return rpcOne(u, data); })).then(function (rs) {
+            var best = null, bestVal = -1n;
+            rs.forEach(function (r) {
+              if (r.status !== "fulfilled") return;
+              var v = wUint(words(r.value)[0]);
+              if (v > bestVal) { bestVal = v; best = r.value; }
+            });
+            if (best === null) throw new Error("rpc");
+            return best;
+          });
+        }
+        function stampProof(id) {
+          var el = $(id);
+          if (!el) return;
+          var d = new Date();
+          function p2(n) { return String(n).padStart(2, "0"); }
+          el.textContent = T("Live \u00b7 updated ", "\u5b9e\u65f6 \u00b7 \u66f4\u65b0\u4e8e ") + p2(d.getHours()) + ":" + p2(d.getMinutes()) + ":" + p2(d.getSeconds());
+        }
 
         function refreshLive() {
-          rpc(SEL.currentHeat).then(function (res) {
+          rpcMax(SEL.currentHeat).then(function (res) {
             state.heat = Number(wUint(words(res)[0]));
             $("lv-heat").textContent = state.heat;
             return Promise.all([
               rpc(SEL.entryOpen),
-              rpc(SEL.poolOf + u256(state.heat)),
-              rpc(SEL.racerCount + u256(state.heat)),
+              rpcMax(SEL.poolOf + u256(state.heat)),
+              rpcMax(SEL.racerCount + u256(state.heat)),
               rpc(SEL.heatEnd + u256(state.heat))
             ]);
           }).then(function (rs) {
@@ -2026,6 +2054,7 @@
             $("lv-pool").textContent = fmtBNB(wUint(words(rs[1])[0]));
             $("lv-racers").textContent = wUint(words(rs[2])[0]).toString();
             $("lv-ends").textContent = fmtEnd(wUint(words(rs[3])[0]));
+            stampProof("lv-proof");
             checkSettleAndChampion();
             if (state.account) loadMyRacers();
           }).catch(function () { /* keep the deployment-summary values already on the page */ });
@@ -2200,6 +2229,8 @@
           if (b) b.addEventListener("click", function () { setTimeout(function () { renderChampion(); refreshLive(); }, 60); });
         });
         refreshLive();
+        setInterval(refreshLive, 10000);
+        document.addEventListener("visibilitychange", function () { if (!document.hidden) refreshLive(); });
       })();
     </script>
     <script>
@@ -2208,7 +2239,8 @@
          for reads + window.ethereum for writes, against the NFT contract. */
       (function () {
         var NFT = "0x7B1ca439312368dE8652b9B5d7A54cA74A884680";
-        var RPC = "https://bsc-dataseed.binance.org";
+        var RPCS = ["https://bsc-dataseed.binance.org", "https://bsc-dataseed1.defibit.io", "https://bsc-dataseed1.ninicoin.io", "https://bsc-rpc.publicnode.com"];
+        var RPC = RPCS[0];
         var SEL = {
           mintFree: "0x8ab53447", mintPaid: "0x69907b9b",
           totalSupply: "0x18160ddd", freeMinted: "0xd10a1a2b",
@@ -2229,14 +2261,38 @@
         function setMsg(html) { var m = $("nft-msg"); if (m) m.innerHTML = html; }
         function short(a) { return a.slice(0, 6) + "…" + a.slice(-4); }
 
-        function rpc(data) {
-          return fetch(RPC, {
+        function rpcOne(url, data) {
+          return fetch(url, {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: NFT, data: data }, "latest"] })
           }).then(function (r) { return r.json(); }).then(function (j) {
             if (!j || !j.result || j.result === "0x") throw new Error("rpc");
             return j.result;
           });
+        }
+        function rpc(data) {
+          /* race every endpoint; first valid answer wins */
+          return Promise.any(RPCS.map(function (u) { return rpcOne(u, data); }));
+        }
+        function rpcMax(data) {
+          /* ask every endpoint; keep the largest first word (freshest head) */
+          return Promise.allSettled(RPCS.map(function (u) { return rpcOne(u, data); })).then(function (rs) {
+            var best = null, bestVal = -1n;
+            rs.forEach(function (r) {
+              if (r.status !== "fulfilled") return;
+              var v = wUint(words(r.value)[0]);
+              if (v > bestVal) { bestVal = v; best = r.value; }
+            });
+            if (best === null) throw new Error("rpc");
+            return best;
+          });
+        }
+        function stampProof(id) {
+          var el = $(id);
+          if (!el) return;
+          var d = new Date();
+          function p2(n) { return String(n).padStart(2, "0"); }
+          el.textContent = T("Live \u00b7 updated ", "\u5b9e\u65f6 \u00b7 \u66f4\u65b0\u4e8e ") + p2(d.getHours()) + ":" + p2(d.getMinutes()) + ":" + p2(d.getSeconds());
         }
 
         function renderOpen() {
@@ -2249,12 +2305,20 @@
         }
 
         function refreshNft() {
-          Promise.all([rpc(SEL.totalSupply), rpc(SEL.freeMinted), rpc(SEL.mintOpen)]).then(function (rs) {
-            $("nft-minted").textContent = wUint(words(rs[0])[0]).toString();
-            $("nft-freeused").textContent = wUint(words(rs[1])[0]).toString();
-            state.open = wUint(words(rs[2])[0]) !== 0n;
-            renderOpen();
+          rpcMax(SEL.totalSupply).then(function (res) {
+            var total = wUint(words(res)[0]);
+            $("nft-minted").textContent = total.toString();
+            var rem = $("nft-remain");
+            if (rem) rem.textContent = (2222n - total).toString();
+            stampProof("nft-proof");
           }).catch(function () { /* keep the values already on the page */ });
+          rpcMax(SEL.freeMinted).then(function (res) {
+            $("nft-freeused").textContent = wUint(words(res)[0]).toString();
+          }).catch(function () {});
+          rpc(SEL.mintOpen).then(function (res) {
+            state.open = wUint(words(res)[0]) !== 0n;
+            renderOpen();
+          }).catch(function () {});
         }
 
         function ensureWallet() {
@@ -2311,6 +2375,8 @@
           if (b) b.addEventListener("click", function () { setTimeout(function () { renderOpen(); refreshNft(); }, 60); });
         });
         refreshNft();
+        setInterval(refreshNft, 10000);
+        document.addEventListener("visibilitychange", function () { if (!document.hidden) refreshNft(); });
       })();
     </script>
     <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})})}</script>
