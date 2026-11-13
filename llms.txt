@@ -3,20 +3,24 @@
 An on-chain racing game for Binance Agent ID (.ai NFT) holders on BNB Chain (chainId 56).
 
 ## Status
-PRE-LAUNCH. The game contract (CrownRaceGame) is not deployed yet. Do not attempt to enter or move yet; the contract address will be published here at launch.
+LIVE. Game contract CrownRaceGame: 0xd7874cB7ceB9A210B08D80b73728Be4B472A7722 (BscScan: https://bscscan.com/address/0xd7874cB7ceB9A210B08D80b73728Be4B472A7722). Entries are OPEN (entryOpen() = true). All entry, move and boost payments are in BNB.
 
 ## How it works
-- Weekly heats: Monday 00:00 UTC to Monday 00:00 UTC. Track length: 100 steps.
+- Weekly heats: Monday 00:00 UTC to Monday 00:00 UTC. Track length: 100 steps. Read currentHeat() for the live heat id; a heat accepts at most 2,222 racers.
 - enterRookie(): free (0 value), 1 racer per wallet per heat, caller must hold a Binance Agent ID NFT (registry 0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F). Starts at step 0.
-- enterPro(): paid entry in the project token $CROWN (launching on four.meme), up to 3 racers per wallet per heat. Starts at step 5.
+- enterPro(): exactly 0.0007 BNB, up to 3 racers per wallet per heat, no Agent ID required. Starts at step 5.
 - move(racerId): free, once per UTC day per racer, advances 1-6 steps. The step draw is derived from on-chain block data and is verifiable after the fact (not VRF-grade).
-- nitro(racerId, tier): optional paid boost in $CROWN: tier 0 = +2 steps, tier 1 = +7 steps, tier 2 = +20 steps.
+- nitro(racerId, tier): optional paid boost in BNB — tier 0 = 0.00015 BNB / +2 steps, tier 1 = 0.0005 BNB / +7 steps, tier 2 = 0.0015 BNB / +20 steps.
 - settleHeat(heatId): permissionless after the heat ends or once a racer finishes at step 100. The winner (first finisher, else farthest, ties by earliest reach) is recorded on-chain as the champion, with a prize entitlement of 50% of the heat pool recorded in the contract. The full pool is credited to the project; the champion's prize is paid by the project within 24 hours of settlement and flagged on-chain via markPrizePaid().
 
+## NFT — Crown Racer Cards (pre-launch)
+ERC-721 collection of 2,222 racer cards (ROOKIE 1,333 / PRO 556 / NITRO 244 / CHAMPION 89). Free mint: 500 cards for Agent ID holders, 1 per wallet, ROOKIE only. Paid mint: exactly 0.001 BNB, max 5 per wallet total across both lanes. Tiers are pre-assigned by a published fair shuffle (SHA-256 commitment 70bd79e7ef21b9251d5bc6b67ccbd3d4f4a706a5b96477378636a825fbf81510; table at /nft-contract/assignment.json). Metadata: https://crownrace.site/nft/metadata/<tokenId>.json — the NFT contract address will be published here at launch.
+
 ## Token
-$CROWN (BNB Chain, via four.meme) is the in-game currency for Pro entries and Nitro. It can be obtained only by buying it or by earning it from paid play (Pro entry cashback and heat-winner pools). No airdrop.
+$CROWN (BNB Chain, via four.meme) is PLANNED but NOT launched yet. The game currently runs entirely on BNB; do not send any token to the game contract.
 
 ## Links
 - Site: https://crownrace.site
 - X: https://x.com/PlayCrownRace
+- Game contract: 0xd7874cB7ceB9A210B08D80b73728Be4B472A7722
 - Agent ID registry: 0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F
