@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crown Race — Deploy CrownRaceGame (owner only)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0b0e1a; --panel:#12172b; --panel2:#171d36; --line:#2a3358;
+    --ink:#f2ecd9; --muted:#9aa3c7; --gold:#f5c542; --gold-ink:#231a00;
+    --crimson:#e5484d; --ok:#3fb97f; --err:#ff6b6f; --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;margin:0;padding:20px 14px 60px}
+  .wrap{max-width:820px;margin:0 auto}
+  header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px}
+  h1{font-size:24px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+  .lang{display:flex;gap:6px;flex-shrink:0}
+  .lang button{background:var(--panel2);color:var(--muted);border:1px solid var(--line);padding:6px 12px;font-size:13px;cursor:pointer;border-radius:6px}
+  .lang button.on{color:var(--gold-ink);background:var(--gold);border-color:var(--gold);font-weight:700}
+  .intro{color:var(--muted);font-size:13.5px;line-height:1.65;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);padding:14px 16px;margin-bottom:16px}
+  .intro b{color:var(--ink)}
+  .step{background:var(--panel);border:1px solid var(--line);padding:18px;margin-bottom:14px;border-radius:8px}
+  .step-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .step-num{font-family:var(--mono);font-size:11px;background:var(--gold);color:var(--gold-ink);padding:4px 8px;font-weight:700;border-radius:4px}
+  .step h2{font-size:18px;margin:0}
+  .step p{color:var(--muted);font-size:13px;line-height:1.6;margin:6px 0 12px}
+  .step p b{color:var(--ink)}
+  .step.danger{border-color:var(--crimson);background:#1a1120}
+  .step.danger .step-num{background:var(--crimson);color:#fff}
+  button.act{background:var(--gold);color:var(--gold-ink);border:none;font-weight:700;font-size:14px;padding:11px 18px;border-radius:6px;cursor:pointer}
+  button.act:disabled{opacity:.45;cursor:not-allowed}
+  button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line);font-size:13px;padding:10px 14px;border-radius:6px;cursor:pointer}
+  button.ghost:disabled{opacity:.45;cursor:not-allowed}
+  button.dangerbtn{background:var(--crimson);color:#fff;border:none;font-weight:700;font-size:14px;padding:11px 18px;border-radius:6px;cursor:pointer}
+  button.dangerbtn:disabled{opacity:.45;cursor:not-allowed}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:8px 0}
+  .kv{font-family:var(--mono);font-size:12.5px;word-break:break-all;line-height:1.7}
+  .kv .k{color:var(--muted)}
+  .status{font-size:13px;margin-top:8px;min-height:18px}
+  .status.ok{color:var(--ok)} .status.error{color:var(--err)} .status.info{color:var(--muted)}
+  input[type=text]{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:12.5px;margin:4px 0 10px}
+  label.f{display:block;font-size:12px;color:var(--muted);margin-top:8px}
+  .addrbox{background:var(--bg);border:1px solid var(--gold);border-radius:6px;padding:12px 14px;margin-top:12px;display:none}
+  .addrbox .addr{font-family:var(--mono);font-size:15px;word-break:break-all;color:var(--gold)}
+  a{color:var(--gold)}
+  ol.check{color:var(--muted);font-size:13.5px;line-height:1.75;margin:6px 0 0;padding-left:20px}
+  ol.check b{color:var(--ink)}
+  textarea{width:100%;min-height:150px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:12px;font-family:var(--mono);font-size:12px;line-height:1.6}
+  pre#log{background:#070912;border:1px solid var(--line);border-radius:6px;padding:12px;font-size:11.5px;line-height:1.6;max-height:260px;overflow:auto;white-space:pre-wrap;word-break:break-all;color:var(--muted)}
+  .pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+  .pill.open{color:#0d2018;background:var(--ok);border-color:var(--ok);font-weight:700}
+  .pill.closed{color:#fff;background:var(--crimson);border-color:var(--crimson);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <h1 data-i18n="title">Deploy CrownRaceGame</h1>
+    <p class="sub" data-i18n="subtitle">Crown Race (the new weekly race game for crownrace.site) — owner deploy page</p>
+  </div>
+  <div class="lang">
+    <button id="langEn" class="on" onclick="setLang('en')">EN</button>
+    <button id="langZh" onclick="setLang('zh')">中文</button>
+  </div>
+</header>
+
+<div class="intro" data-i18n="intro">This page deploys the <b>CrownRaceGame</b> contract from <b>your own wallet</b> on BNB Chain (chainId 56). The constructor takes one argument — the Binance Agent ID (.ai) registry — prefilled below with the real registry address. <b>Entries start CLOSED</b> (<span style="font-family:var(--mono)">entryOpen = false</span>): deploying never opens them. Opening entries is a separate, explicit step (step 03) that only you can trigger. Every transaction is signed in your wallet; this page never asks for a seed phrase or a private key.</div>
+
+<section class="step" id="step1">
+  <div class="step-head"><span class="step-num">01</span><h2 data-i18n="s1h">Connect wallet</h2></div>
+  <p data-i18n="s1p">Connect the owner wallet that will deploy and own the contract. The page switches the wallet to BNB Chain automatically if needed.</p>
+  <div class="row"><button class="act" id="btnConnect" onclick="connect()" data-i18n="connect">Connect wallet</button></div>
+  <div class="kv"><span class="k" data-i18n="wallet">Wallet:</span> <span id="walletAddr">—</span></div>
+  <div class="kv"><span class="k" data-i18n="chain">Chain:</span> <span id="chainInfo">—</span></div>
+  <div class="status info" id="status1"></div>
+</section>
+
+<section class="step" id="step2">
+  <div class="step-head"><span class="step-num">02</span><h2 data-i18n="s2h">Deploy CrownRaceGame</h2></div>
+  <p data-i18n="s2p">Deploys a fresh CrownRaceGame with the registry address below as its only constructor argument. You become the contract owner. Gas is paid by your wallet (a small amount of BNB on BNB Chain).</p>
+  <label class="f" data-i18n="registryLabel">Agent ID registry (constructor argument) — Binance .ai Agent ID NFT, BNB mainnet</label>
+  <input type="text" id="registryInput" value="0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F" spellcheck="false">
+  <div class="row"><button class="act" id="btnDeploy" onclick="deploy()" disabled data-i18n="deploy">Deploy contract</button></div>
+  <div class="status info" id="status2"></div>
+  <div class="addrbox" id="addrBox">
+    <div class="k" style="color:var(--muted);font-size:12px" data-i18n="deployedAt">Deployed contract address</div>
+    <div class="addr" id="deployedAddr"></div>
+    <div class="row">
+      <button class="ghost" onclick="copyDeployed()" data-i18n="copyAddr">Copy address</button>
+      <a id="bscLink" href="#" target="_blank" rel="noopener">BscScan ↗</a>
+    </div>
+  </div>
+  <label class="f" data-i18n="existingLabel">Already deployed earlier? Paste the contract address to load it for step 03:</label>
+  <div class="row" style="flex-wrap:nowrap">
+    <input type="text" id="existingInput" placeholder="0x…" spellcheck="false" style="margin:0">
+    <button class="ghost" id="btnLoad" onclick="loadExisting()" data-i18n="load">Load</button>
+  </div>
+  <div class="status info" id="statusLoad"></div>
+</section>
+
+<section class="step danger" id="step3">
+  <div class="step-head"><span class="step-num">03</span><h2 data-i18n="s3h">Open entries (owner only) — separate step</h2></div>
+  <p data-i18n="s3p">Deploying the contract did <b>NOT</b> open anything. Entries open only when you press the button below, signed by the owner wallet. Opening applies to the <b>current weekly heat</b> (heats run Monday 00:00 UTC to Monday 00:00 UTC): racers can enter this week's heat right away. You can close entries again at any time with the other button.</p>
+  <div class="kv"><span class="k" data-i18n="contractOwner">Contract owner:</span> <span id="readOwner">—</span></div>
+  <div class="kv"><span class="k" data-i18n="entriesState">Entries:</span> <span id="readEntryOpen">—</span></div>
+  <div class="kv"><span class="k" data-i18n="currentHeat">Current heat:</span> <span id="readHeat">—</span></div>
+  <div class="kv"><span class="k" data-i18n="heatEnds">Heat ends (UTC):</span> <span id="readHeatEnd">—</span></div>
+  <div class="row">
+    <button class="dangerbtn" id="btnOpen" onclick="setEntries(true)" disabled data-i18n="openBtn">Open entries now</button>
+    <button class="ghost" id="btnClose" onclick="setEntries(false)" disabled data-i18n="closeBtn">Close entries</button>
+    <button class="ghost" id="btnRefresh" onclick="refreshManage()" data-i18n="refresh">Refresh status</button>
+  </div>
+  <div class="status info" id="status3"></div>
+</section>
+
+<section class="step" id="step4">
+  <div class="step-head"><span class="step-num">04</span><h2 data-i18n="s4h">Next steps after deploying</h2></div>
+  <ol class="check">
+    <li data-i18n="c1"><b>Check the address.</b> Open the contract on BscScan (link in step 02) and confirm it is the CrownRaceGame you just deployed.</li>
+    <li data-i18n="c2"><b>Entries stay closed for now.</b> Do not open them in step 03 until Muse confirms the new crownrace.site is live with this contract wired in — otherwise racers could enter a heat before the site shows it.</li>
+    <li data-i18n="c3"><b>Send the address to Muse.</b> Copy the summary box below and send it in one paste. Muse wires the address into the site, the copy-ready agent prompts, and llms.txt / agent.json, then re-pushes.</li>
+    <li data-i18n="c4"><b>Then open entries</b> in step 03 (owner wallet only) when Muse says the live site is verified.</li>
+    <li data-i18n="c5"><b>Announce last.</b> The launch post to Season 1 holders via @PlayCrownRace goes out only after the site is live and entries are open.</li>
+  </ol>
+</section>
+
+<section class="step" id="step5">
+  <div class="step-head"><span class="step-num">05</span><h2 data-i18n="s5h">Deployment summary — send this to Muse</h2></div>
+  <p data-i18n="s5p">Copy this whole box in one paste and send it back. The address is also kept in this browser, so you can reload this page without losing it.</p>
+  <textarea id="summary" readonly></textarea>
+  <div class="row"><button class="ghost" onclick="copySummary()" data-i18n="copySummary">Copy summary</button></div>
+</section>
+
+<section class="step">
+  <div class="step-head"><span class="step-num">LOG</span><h2 data-i18n="logh">Log</h2></div>
+  <pre id="log"></pre>
+</section>
+
+</div>
+<script>
+const REGISTRY_DEFAULT = "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F";
+const BSC_CHAIN_ID = "0x38"; // 56
+const LS_KEY = "crownrace_game_deploy_v1";
+const ABI = [{"inputs":[{"internalType":"address","name":"agentId_","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bool","name":"open","type":"bool"}],"name":"EntryOpenSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"heatId","type":"uint256"},{"indexed":true,"internalType":"uint256","name":"racerId","type":"uint256"},{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"finishTime","type":"uint256"}],"name":"Finished","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"heatId","type":"uint256"},{"indexed":true,"internalType":"address","name":"champion","type":"address"},{"indexed":false,"internalType":"uint256","name":"prize","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"ownerShare","type":"uint256"}],"name":"HeatSettled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"heatId","type":"uint256"},{"indexed":true,"internalType":"uint256","name":"racerId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"steps","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"position","type":"uint256"}],"name":"Moved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"heatId","type":"uint256"},{"indexed":true,"internalType":"uint256","name":"racerId","type":"uint256"},{"indexed":false,"internalType":"uint8","name":"tier","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"steps","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"position","type":"uint256"}],"name":"NitroUsed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"heatId","type":"uint256"},{"indexed":true,"internalType":"uint256","name":"racerId","type":"uint256"},{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"bool","name":"pro","type":"bool"}],"name":"RacerEntered","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdrawn","type":"event"},{"inputs":[],"name":"MAX_PER_HEAT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_PRO_PER_WALLET","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRO_HEAD_START","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRO_PRICE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TRACK_LENGTH","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"agentId","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"heatId","type":"uint256"}],"name":"championOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"currentHeat","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"enterPro","outputs":[{"internalType":"uint256","name":"racerId","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"enterRookie","outputs":[{"internalType":"uint256","name":"racerId","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"entryOpen","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"heatId","type":"uint256"}],"name":"finisherOf","outputs":[{"internalType":"uint256","name":"racerId_","type":"uint256"},{"internalType":"uint256","name":"finishTime_","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"heatId","type":"uint256"}],"name":"heatEnd","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"heatIdAt","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"heatId","type":"uint256"}],"name":"heatStart","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"heats","outputs":[{"internalType":"uint256","name":"pool","type":"uint256"},{"internalType":"uint256","name":"racerCount","type":"uint256"},{"internalType":"uint256","name":"leaderRacer","type":"uint256"},{"internalType":"uint256","name":"finisherRacer","type":"uint256"},{"internalType":"uint256","name":"finishTime","type":"uint256"},{"internalType":"address","name":"champion","type":"address"},{"internalType":"bool","name":"settled","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"heatId","type":"uint256"}],"name":"isSettled","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"heatId","type":"uint256"}],"name":"leaderOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"heatId","type":"uint256"}],"name":"leaderRacerOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"racerId","type":"uint256"}],"name":"move","outputs":[{"internalType":"uint256","name":"steps","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"racerId","type":"uint256"},{"internalType":"uint8","name":"tier","type":"uint8"}],"name":"nitro","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"nitroPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"nitroSteps","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ownerBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"heatId","type":"uint256"}],"name":"poolOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"proEntries","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"heatId","type":"uint256"}],"name":"racerCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"racerId","type":"uint256"}],"name":"racerInfo","outputs":[{"internalType":"address","name":"owner_","type":"address"},{"internalType":"uint256","name":"heatId_","type":"uint256"},{"internalType":"uint256","name":"position_","type":"uint256"},{"internalType":"bool","name":"pro_","type":"bool"},{"internalType":"uint256","name":"lastMoveDay_","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"racers","outputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"heatId","type":"uint256"},{"internalType":"uint256","name":"position","type":"uint256"},{"internalType":"bool","name":"pro","type":"bool"},{"internalType":"uint256","name":"lastMoveDay","type":"uint256"},{"internalType":"uint256","name":"reachedAt","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"wallet","type":"address"},{"internalType":"uint256","name":"heatId","type":"uint256"}],"name":"racersOf","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"address","name":"","type":"address"}],"name":"rookieEntries","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bool","name":"open","type":"bool"}],"name":"setEntryOpen","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"heatId","type":"uint256"}],"name":"settleHeat","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"totalRacers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const BYTECODE = "0x60a0346100ed57601f6119eb38819003918201601f19168301916001600160401b038311848410176100f2578084926020946040528339810103126100ed57516001600160a01b0381168082036100ed5760005490156100b9576001600160a81b031916331760005560805265886c98b760006001556601c6bf5263400060029081556605543df729c000600355600455600760055560146006556040516118e2908161010982396080518181816102aa01526105660152f35b60405162461bcd60e51b815260206004820152600c60248201526b5a65726f206164647265737360a01b6044820152606490fd5b600080fd5b634e487b7160e01b600052604160045260246000fdfe608080604052600436101561001357600080fd5b60003560e01c90816311cbf96c146114b85750806324c0825214611496578063278974fd14611478578063328b4d4b14611408578063363828f6146113d957806337b42ece146113755780633ccfd60b1461127b57806345d13d8a1461124f57806350d8d71114611207578063540f93f7146111cc578063561ae000146111535780635c7b7459146111275780636075f856146110c45780636fb2ead1146110a8578063785ecb37146110715780637939d8721461105557806381f0f65514610e0c5780638396602114610de05780638430034f14610dc257806387cb15f714610c975780638926e42214610c1e5780638aad58d314610bef5780638d621ce314610bd15780638da5cb5b14610ba8578063a34b4ba514610ae0578063a3ddc55b14610abc578063a5d21020146109b3578063bedcf00314610995578063bf32719b1461094d578063c57540b914610927578063d0824be514610909578063dc4e989e1461053a578063e2295135146102d9578063e84f43b714610294578063ea382ed81461025d578063f2fde38b146101d85763ffc90087146101b657600080fd5b346101d35760003660031901126101d35760206040516108ae8152f35b600080fd5b346101d35760203660031901126101d3576101f16114e8565b60005490610209336001600160a01b03841614611521565b6001600160a01b0316908115610229576001600160a01b03191617600055005b60405162461bcd60e51b815260206004820152600c60248201526b5a65726f206164647265737360a01b6044820152606490fd5b346101d35760203660031901126101d3576004356000526008602052602060018060a01b0360056040600020015416604051908152f35b346101d35760003660031901126101d3576040517f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03168152602090f35b346101d35760203660031901126101d3576004358060005260086020526040600020906005820191825460ff8160a01c166105035761031783611687565b42108015906104f6575b156104c05760ff60a01b1916600160a01b17835560038101546000811561048f57506000908152600760205260409020546001600160a01b0316925b80546001600160a01b0319166001600160a01b03949094169384179055546000929190839083151580610486575b61041f575b50907fa4040f8f82a81e85f03a17e450a6aab11629e638948460b412519a730b2bfa8a604084938151908782526020820152a3816103ca57005b600080809381935af16103db611597565b50156103e357005b60405162461bcd60e51b8152602060048201526014602482015273141c9a5e99481c185e5b595b9d0819985a5b195960621b6044820152606490fd5b919350508060011c92838203918211610470577fa4040f8f82a81e85f03a17e450a6aab11629e638948460b412519a730b2bfa8a604083610464869591600d546114fe565b600d5592935050610390565b634e487b7160e01b600052601160045260246000fd5b5080151561038b565b9390506002820154806104a3575b5061035d565b845260076020526040909320546001600160a01b0316928461049d565b60405162461bcd60e51b815260206004820152600e60248201526d1219585d081b9bdd08195b99195960921b6044820152606490fd5b5060038201541515610321565b60405162461bcd60e51b815260206004820152600f60248201526e105b1c9958591e481cd95d1d1b1959608a1b6044820152606490fd5b60003660031901126101d357346108c4576040516370a0823160e01b81523360048201526020816024817f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03165afa9081156108b857600091610886575b501561084d576105ae4261150b565b6000818152600a60209081526040808320338452909152902054610808576000908152600a60209081526040808320338452909152812060019055805460a01c60ff16156107d2576105ff4261150b565b90818152600860205260016040822001906108ae825410156107a15760095490600019821461078d5750600101908160095560405161063d81611559565b3381526005602082018581526040830160008152606084016000815260808501916000835260a086019342855288600052600760205260406000209660018060a01b039060018060a01b03905116166bffffffffffffffffffffffff60a01b885416178755516001870155516002860155600385019051151560ff801983541691161790555160048401555191015580549060018201809211610470575533600052600c602052604060002082600052602052604060002091825492600160401b841015610777576001840180825584101561076157602093839160005284600020015561072b8282611815565b8160405191600083527fb81ba34c7eea916e3bf0f723c3f2b822726576db475e6b8596fd1f3f16992af7853394a4604051908152f35b634e487b7160e01b600052603260045260246000fd5b634e487b7160e01b600052604160045260246000fd5b634e487b7160e01b81526011600452602490fd5b60405162461bcd60e51b81526020600482015260096024820152681219585d08199d5b1b60ba1b6044820152606490fd5b60405162461bcd60e51b815260206004820152600e60248201526d115b9d1c9a595cc818db1bdcd95960921b6044820152606490fd5b60405162461bcd60e51b815260206004820152601e60248201527f4f6e6520726f6f6b6965207065722077616c6c657420706572206865617400006044820152606490fd5b60405162461bcd60e51b81526020600482015260116024820152701059d95b9d081251081c995c5d5a5c9959607a1b6044820152606490fd5b90506020813d6020116108b0575b816108a160209383611575565b810103126101d357518161059f565b3d9150610894565b6040513d6000823e3d90fd5b60405162461bcd60e51b815260206004820152601760248201527f526f6f6b696520656e7472792069732076616c756520300000000000000000006044820152606490fd5b346101d35760003660031901126101d3576020600954604051908152f35b346101d35760003660031901126101d357602060ff60005460a01c166040519015158152f35b346101d35760403660031901126101d3576109666114d2565b600435600052600b60205260406000209060018060a01b03166000526020526020604060002054604051908152f35b346101d35760003660031901126101d3576020600d54604051908152f35b60403660031901126101d35760043560243560ff81168082036101d3576003811015610a8c5760038210156107615760607fec9f19bfcb913e4d643413bd89d0c67fdafe731cc5ac52d54e0fb77937af13f391610a15846001015434146115d7565b8460005260076020526040600020610a3760018060a01b038254163314611649565b610a40816116ae565b60026001820195865460005260086020526040600020610a613482546114fe565b905560040195610a72875489611740565b5495549101549060405192835260208301526040820152a3005b60405162461bcd60e51b81526020600482015260086024820152672130b2103a34b2b960c11b6044820152606490fd5b346101d35760003660031901126101d3576020610ad84261150b565b604051908152f35b346101d35760403660031901126101d3576001600160a01b03610b016114e8565b16600052600c602052604060002060243560005260205260406000206040518060208354918281520190819360005260206000209060005b818110610b925750505081610b4f910382611575565b6040519182916020830190602084525180915260408301919060005b818110610b79575050500390f35b8251845285945060209384019390920191600101610b6b565b8254845260209093019260019283019201610b39565b346101d35760003660031901126101d3576000546040516001600160a01b039091168152602090f35b346101d35760203660031901126101d3576020610ad8600435611687565b346101d35760203660031901126101d35760043560005260086020526020600260406000200154604051908152f35b346101d35760203660031901126101d3576004358015158091036101d3576000547f8390d72e0634f8bf87c78cd1ebb277b591e840cd7addb17b2f17eb1c9cb5b3b591602091610c78336001600160a01b03831614611521565b60ff60a01b191660a082901b60ff60a01b1617600055604051908152a1005b346101d35760203660031901126101d357600435806000526007602052604060002090610cce60018060a01b038354163314611649565b610cd7826116ae565b6201518042046004830181815414610d875781905560001943014381116104705760069160405190602082019240835284604083015260608201523360601b608082015260748152610d2a609482611575565b51902006906001820180921161047057602092610d478383611740565b7f5e3428123447c999946b4eb1fc52841ddcadbb3dcf11ca6b42ccde0fe4eb0d7f60406002600184015493015481519086825287820152a3604051908152f35b60405162461bcd60e51b8152602060048201526013602482015272416c7265616479206d6f76656420746f64617960681b6044820152606490fd5b346101d35760203660031901126101d3576020610ad860043561161a565b346101d35760203660031901126101d35760043560005260086020526020604060002054604051908152f35b60003660031901126101d357610e2a66027ca57357c00034146115d7565b610e334261150b565b6000818152600b6020908152604080832033845290915290205460031115611010576000818152600b60209081526040808320338452909152902080546001810191908210610470575560005260086020526040600020610e953482546114fe565b9055600060ff815460a01c16156107d257610eaf4261150b565b90818152600860205260016040822001906108ae825410156107a15760095490600019821461078d57506001019081600955604051610eed81611559565b33815260056020820185815260408301828152606084016001815260808501916000835260a086019342855288600052600760205260406000209660018060a01b039060018060a01b03905116166bffffffffffffffffffffffff60a01b885416178755516001870155516002860155600385019051151560ff801983541691161790555160048401555191015580549060018201809211610470575533600052600c602052604060002082600052602052604060002091825492600160401b8410156107775760018401808255841015610761576020938391600052846000200155610fda8282611815565b8160405191600183527fb81ba34c7eea916e3bf0f723c3f2b822726576db475e6b8596fd1f3f16992af7853394a4604051908152f35b60405162461bcd60e51b815260206004820152601d60248201527f4d617820332050726f207065722077616c6c65742070657220686561740000006044820152606490fd5b346101d35760003660031901126101d357602060405160038152f35b346101d35760203660031901126101d3576004356000526008602052602060ff60056040600020015460a01c166040519015158152f35b346101d35760003660031901126101d357602060405160648152f35b346101d35760203660031901126101d3576004356000526008602052600260406000200154801560001461110a5750602060005b6040516001600160a01b039091168152f35b6000526007602052602060018060a01b03604060002054166110f8565b346101d35760203660031901126101d35760043560038110156101d35760209060040154604051908152f35b346101d35760203660031901126101d357600435600052600860205260e0604060002060ff81549160018101549060028101546003820154906005600484015493015493604051968752602087015260408601526060850152608084015260018060a01b03811660a084015260a01c16151560c0820152f35b346101d35760203660031901126101d35760048035600090815260086020908152604091829020600381015493015482519384529083015290f35b346101d35760403660031901126101d3576112206114d2565b600435600052600a60205260406000209060018060a01b03166000526020526020604060002054604051908152f35b346101d35760203660031901126101d35760043560038110156101d35760209060010154604051908152f35b346101d35760003660031901126101d3576000546001600160a01b03166112a3338214611521565b600d5490811561133a576000808084819482600d555af16112c2611597565b5015611303576000546040519182526001600160a01b0316907f7084f5476618d8e60b11ef0d7d3f06914655adb8793e28ff7f018d4c76d505d590602090a2005b60405162461bcd60e51b815260206004820152600f60248201526e15da5d1a191c985dc819985a5b1959608a1b6044820152606490fd5b60405162461bcd60e51b81526020600482015260136024820152724e6f7468696e6720746f20776974686472617760681b6044820152606490fd5b346101d35760203660031901126101d357600435600052600760205260a06040600020600180831b03815416906001810154906002810154600460ff6003840154169201549260405194855260208501526040840152151560608301526080820152f35b346101d35760203660031901126101d35760043560005260086020526020600160406000200154604051908152f35b346101d35760203660031901126101d357600435600052600760205260c0604060002060018060a01b0381541690600181015490600281015460ff6003830154169060056004840154930154936040519586526020860152604085015215156060840152608083015260a0820152f35b346101d35760203660031901126101d3576020610ad860043561150b565b346101d35760003660031901126101d357602060405166027ca57357c0008152f35b346101d35760003660031901126101d35780600560209252f35b602435906001600160a01b03821682036101d357565b600435906001600160a01b03821682036101d357565b9190820180921161047057565b6203f48081018091116104705762093a80900490565b1561152857565b60405162461bcd60e51b81526020600482015260096024820152682737ba1037bbb732b960b91b6044820152606490fd5b60c0810190811067ffffffffffffffff82111761077757604052565b90601f8019910116810190811067ffffffffffffffff82111761077757604052565b3d156115d2573d9067ffffffffffffffff821161077757604051916115c6601f8201601f191660200184611575565b82523d6000602084013e565b606090565b156115de57565b60405162461bcd60e51b8152602060048201526014602482015273115e1858dd081c1c9a58d9481c995c5d5a5c995960621b6044820152606490fd5b80156116435762093a80810290810462093a8003610470576203f47f1981019081116104705790565b50600090565b1561165057565b60405162461bcd60e51b815260206004820152600f60248201526e2737ba103930b1b2b91037bbb732b960891b6044820152606490fd5b80156116a6576116969061161a565b62093a8081018091116104705790565b506205460090565b600101546116bb81611687565b42101561170e5760005260086020526003604060002001546116d957565b60405162461bcd60e51b815260206004820152600d60248201526c1219585d08199a5b9a5cda1959609a1b6044820152606490fd5b60405162461bcd60e51b815260206004820152600a6024820152691219585d08195b99195960b21b6044820152606490fd5b80600052600760205260406000209161175e600284019182546114fe565b6064811161180d575b80915542600584015560646001840191611782848454611815565b14806117f3575b61179257505050565b80546000526008602052816003604060002001558054600052600860205242600460406000200155549160018060a01b03905416917ffaf03a012bca8208f72db1e993ba2a0f053beb33404c4f040d966eb204057c2d6020604051428152a4565b508054600052600860205260036040600020015415611789565b506064611767565b6000526008602052604060002060038101546118a857600201805480156118a45782811461189f576000838152600760205260408082209282529020600280830154908201548082119392918415611877575b50505050611874575050565b55565b149250908261188c575b505038808080611868565b6005919250810154910154113880611881565b505050565b5055565b505056fea26469706673582212205a64da9e13c18418892e4d499584012931534d4e7ac86219ef50e48c4e5bc53564736f6c634300081a0033";
+
+const I18N = {
+  en: {
+    title: "Deploy CrownRaceGame",
+    subtitle: "Crown Race (the new weekly race game for crownrace.site) — owner deploy page",
+    intro: "This page deploys the <b>CrownRaceGame</b> contract from <b>your own wallet</b> on BNB Chain (chainId 56). The constructor takes one argument — the Binance Agent ID (.ai) registry — prefilled below with the real registry address. <b>Entries start CLOSED</b> (entryOpen = false): deploying never opens them. Opening entries is a separate, explicit step (step 03) that only you can trigger. Every transaction is signed in your wallet; this page never asks for a seed phrase or a private key.",
+    s1h: "Connect wallet", s1p: "Connect the owner wallet that will deploy and own the contract. The page switches the wallet to BNB Chain automatically if needed.",
+    connect: "Connect wallet", wallet: "Wallet:", chain: "Chain:",
+    s2h: "Deploy CrownRaceGame",
+    s2p: "Deploys a fresh CrownRaceGame with the registry address below as its only constructor argument. You become the contract owner. Gas is paid by your wallet (a small amount of BNB on BNB Chain).",
+    registryLabel: "Agent ID registry (constructor argument) — Binance .ai Agent ID NFT, BNB mainnet",
+    deploy: "Deploy contract", deployedAt: "Deployed contract address", copyAddr: "Copy address",
+    existingLabel: "Already deployed earlier? Paste the contract address to load it for step 03:", load: "Load",
+    s3h: "Open entries (owner only) — separate step",
+    s3p: "Deploying the contract did <b>NOT</b> open anything. Entries open only when you press the button below, signed by the owner wallet. Opening applies to the <b>current weekly heat</b> (heats run Monday 00:00 UTC to Monday 00:00 UTC): racers can enter this week's heat right away. You can close entries again at any time with the other button.",
+    contractOwner: "Contract owner:", entriesState: "Entries:", currentHeat: "Current heat:", heatEnds: "Heat ends (UTC):",
+    openBtn: "Open entries now", closeBtn: "Close entries", refresh: "Refresh status",
+    s4h: "Next steps after deploying",
+    c1: "<b>Check the address.</b> Open the contract on BscScan (link in step 02) and confirm it is the CrownRaceGame you just deployed.",
+    c2: "<b>Entries stay closed for now.</b> Do not open them in step 03 until Muse confirms the new crownrace.site is live with this contract wired in — otherwise racers could enter a heat before the site shows it.",
+    c3: "<b>Send the address to Muse.</b> Copy the summary box below and send it in one paste. Muse wires the address into the site, the copy-ready agent prompts, and llms.txt / agent.json, then re-pushes.",
+    c4: "<b>Then open entries</b> in step 03 (owner wallet only) when Muse says the live site is verified.",
+    c5: "<b>Announce last.</b> The launch post to Season 1 holders via @PlayCrownRace goes out only after the site is live and entries are open.",
+    s5h: "Deployment summary — send this to Muse",
+    s5p: "Copy this whole box in one paste and send it back. The address is also kept in this browser, so you can reload this page without losing it.",
+    copySummary: "Copy summary", logh: "Log",
+    noWallet: "No wallet found. Open this page in a browser with a wallet (e.g. MetaMask / Binance Wallet).",
+    connected: "Connected.", wrongChain: "Wallet is not on BNB Chain — switching…",
+    onBsc: "BNB Chain (56) ✓", notConnected: "Not connected",
+    badRegistry: "The registry address is not a valid address: ",
+    deploying: "Deploy transaction sent — waiting for confirmation…",
+    deployed: "Deployed. Entries are CLOSED — nothing is open yet.",
+    copied: "Copied.",
+    badAddr: "That is not a valid address: ",
+    loaded: "Contract loaded. Step 03 status updated.",
+    notOwner: "Your connected wallet is NOT the contract owner — step 03 buttons stay disabled.",
+    isOwner: "Your wallet is the contract owner.",
+    openIs: "OPEN", closedIs: "CLOSED",
+    confirmOpen: "Open entries now?\n\nRacers will be able to enter the CURRENT weekly heat immediately (Rookie free with an Agent ID, Pro 0.0007 BNB). The heat ends Monday 00:00 UTC.\n\nOnly do this after the live site shows this contract.",
+    confirmClose: "Close entries now?\n\nNo new racers can enter until you open entries again. Racers already in keep racing.",
+    sending: "Transaction sent — waiting for confirmation…",
+    nowOpen: "Entries are now OPEN.", nowClosed: "Entries are now CLOSED.",
+    txFailed: "Transaction failed: ",
+    readFail: "Could not read the contract (check the address / network): "
+  },
+  zh: {
+    title: "部署 CrownRaceGame",
+    subtitle: "Crown Race（crownrace.site 的全新每周竞速游戏）— 合约所有者部署页面",
+    intro: "本页面在 BNB 链（chainId 56）上用<b>你自己的钱包</b>部署 <b>CrownRaceGame</b> 合约。构造函数只有一个参数——币安 Agent ID（.ai）注册表地址——下方已预填真实地址。<b>报名入口初始为关闭状态</b>（entryOpen = false）：部署不会自动开启。开启报名是第 03 步中一个独立的、需要你亲手点击的步骤。每笔交易都在你的钱包中签名；本页面绝不会索要助记词或私钥。",
+    s1h: "连接钱包", s1p: "连接将要部署并拥有该合约的所有者钱包。如有需要，页面会自动把钱包切换到 BNB 链。",
+    connect: "连接钱包", wallet: "钱包：", chain: "链：",
+    s2h: "部署 CrownRaceGame",
+    s2p: "以以下注册表地址作为唯一构造函数参数，部署一份全新的 CrownRaceGame。你将成为合约所有者。Gas 由你的钱包支付（BNB 链上少量 BNB）。",
+    registryLabel: "Agent ID 注册表（构造函数参数）— 币安 .ai Agent ID NFT，BNB 主网",
+    deploy: "部署合约", deployedAt: "已部署的合约地址", copyAddr: "复制地址",
+    existingLabel: "之前已经部署过？粘贴合约地址以载入到第 03 步：", load: "载入",
+    s3h: "开启报名（仅所有者）— 独立步骤",
+    s3p: "部署合约<b>并没有</b>开启任何入口。只有当你按下下方按钮、并由所有者钱包签名后，报名才会开启。开启作用于<b>本周的 heat</b>（heat 从周一 00:00 UTC 到下周一 00:00 UTC）：车手可立即加入本周比赛。你也可以随时用另一个按钮再次关闭报名。",
+    contractOwner: "合约所有者：", entriesState: "报名状态：", currentHeat: "当前 heat：", heatEnds: "Heat 结束时间 (UTC)：",
+    openBtn: "立即开启报名", closeBtn: "关闭报名", refresh: "刷新状态",
+    s4h: "部署后的后续步骤",
+    c1: "<b>核对地址。</b>在 BscScan 打开合约（第 02 步中的链接），确认它就是你刚部署的 CrownRaceGame。",
+    c2: "<b>报名先保持关闭。</b>在 Muse 确认新版 crownrace.site 已上线并已接入该合约之前，不要在第 03 步开启报名——否则车手会在网站还没展示时就进入 heat。",
+    c3: "<b>把地址发给 Muse。</b>复制下方汇总框，整段发回。Muse 会把地址接入网站、给 Agent 的一键提示词以及 llms.txt / agent.json，然后重新推送。",
+    c4: "<b>然后再开启报名</b>——在第 03 步（仅所有者钱包），等 Muse 确认线上站点验证通过后进行。",
+    c5: "<b>最后才公布。</b>通过 @PlayCrownRace 向第一季持有者发布的推文，只在网站上线且报名开启后发出。",
+    s5h: "部署汇总 — 发给 Muse",
+    s5p: "把这一整框内容一次粘贴发回。地址也会保存在本浏览器中，刷新页面不会丢失。",
+    copySummary: "复制汇总", logh: "日志",
+    noWallet: "未检测到钱包。请在装有钱包的浏览器中打开本页面（例如 MetaMask / 币安钱包）。",
+    connected: "已连接。", wrongChain: "钱包不在 BNB 链上 — 正在切换…",
+    onBsc: "BNB 链 (56) ✓", notConnected: "未连接",
+    badRegistry: "注册表地址无效：",
+    deploying: "部署交易已发送 — 等待确认…",
+    deployed: "部署完成。报名仍为关闭状态——尚未开启任何入口。",
+    copied: "已复制。",
+    badAddr: "地址无效：",
+    loaded: "合约已载入。第 03 步状态已更新。",
+    notOwner: "你连接的钱包不是合约所有者——第 03 步按钮保持禁用。",
+    isOwner: "你的钱包是合约所有者。",
+    openIs: "已开启", closedIs: "已关闭",
+    confirmOpen: "现在开启报名？\n\n车手将可立即加入本周的 heat（Rookie 凭 Agent ID 免费，Pro 0.0007 BNB）。Heat 于周一 00:00 UTC 结束。\n\n请只在线上网站已展示该合约后执行此操作。",
+    confirmClose: "现在关闭报名？\n\n在你再次开启之前，将没有新车手能加入。已加入的车手继续比赛。",
+    sending: "交易已发送 — 等待确认…",
+    nowOpen: "报名现已开启。", nowClosed: "报名现已关闭。",
+    txFailed: "交易失败：",
+    readFail: "无法读取合约（请检查地址 / 网络）："
+  }
+};
+
+let lang = "en";
+const state = { provider: null, signer: null, address: null, contractAddr: "", reads: null };
+
+function t(k) { return (I18N[lang] && I18N[lang][k]) || I18N.en[k] || k; }
+function $(id) { return document.getElementById(id); }
+function log(msg) {
+  const el = $("log");
+  const ts = new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC";
+  el.textContent += "[" + ts + "] " + msg + "\n";
+  el.scrollTop = el.scrollHeight;
+}
+function setStatus(id, msg, kind) { const el = $(id); el.textContent = msg || ""; el.className = "status " + (kind || "info"); }
+
+function applyLang() {
+  document.querySelectorAll("[data-i18n]").forEach(function (el) {
+    const k = el.getAttribute("data-i18n");
+    if (I18N[lang][k]) el.innerHTML = I18N[lang][k];
+  });
+  $("langEn").className = lang === "en" ? "on" : "";
+  $("langZh").className = lang === "zh" ? "on" : "";
+  paintWallet();
+  paintManage();
+  buildSummary();
+}
+function setLang(l) { lang = l; applyLang(); }
+
+function readProvider() {
+  if (window.ethereum) return new ethers.providers.Web3Provider(window.ethereum);
+  return new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org");
+}
+
+async function ensureBSC() {
+  const id = await window.ethereum.request({ method: "eth_chainId" });
+  if (id === BSC_CHAIN_ID) return;
+  setStatus("status1", t("wrongChain"), "info");
+  try {
+    await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: BSC_CHAIN_ID }] });
+  } catch (e) {
+    await window.ethereum.request({ method: "wallet_addEthereumChain", params: [{ chainId: BSC_CHAIN_ID, chainName: "BNB Smart Chain", nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 }, rpcUrls: ["https://bsc-dataseed.binance.org"], blockExplorerUrls: ["https://bscscan.com"] }] });
+  }
+}
+
+function paintWallet() {
+  $("walletAddr").textContent = state.address || "—";
+  $("chainInfo").textContent = state.signer ? t("onBsc") : t("notConnected");
+  $("btnDeploy").disabled = !state.signer;
+}
+
+async function connect() {
+  if (!window.ethereum) { setStatus("status1", t("noWallet"), "error"); return; }
+  try {
+    await ensureBSC();
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    state.provider = new ethers.providers.Web3Provider(window.ethereum);
+    state.signer = state.provider.getSigner();
+    state.address = await state.signer.getAddress();
+    paintWallet();
+    setStatus("status1", t("connected"), "ok");
+    log("Connected wallet " + state.address);
+    if (state.contractAddr) refreshManage();
+  } catch (e) {
+    setStatus("status1", t("txFailed") + (e.message || e), "error");
+    log("Connect failed: " + (e.message || e));
+  }
+}
+
+async function deploy() {
+  const registry = $("registryInput").value.trim();
+  if (!ethers.utils.isAddress(registry)) { setStatus("status2", t("badRegistry") + registry, "error"); return; }
+  if (!state.signer) return;
+  try {
+    setStatus("status2", t("deploying"), "info");
+    log("Deploying CrownRaceGame with registry " + registry + " …");
+    const factory = new ethers.ContractFactory(ABI, BYTECODE, state.signer);
+    const contract = await factory.deploy(registry);
+    log("Deploy tx: " + contract.deployTransaction.hash);
+    await contract.deployed();
+    state.contractAddr = contract.address;
+    localStorage.setItem(LS_KEY, JSON.stringify({ addr: state.contractAddr, registry: registry }));
+    showDeployed();
+    setStatus("status2", t("deployed"), "ok");
+    log("CrownRaceGame deployed at " + state.contractAddr + " — entries CLOSED (entryOpen=false).");
+    refreshManage();
+  } catch (e) {
+    setStatus("status2", t("txFailed") + (e.message || e), "error");
+    log("Deploy failed: " + (e.message || e));
+  }
+}
+
+function showDeployed() {
+  if (!state.contractAddr) return;
+  $("addrBox").style.display = "block";
+  $("deployedAddr").textContent = state.contractAddr;
+  $("bscLink").href = "https://bscscan.com/address/" + state.contractAddr;
+}
+
+function copyText(txt, statusId) {
+  const done = function () { setStatus(statusId, t("copied"), "ok"); };
+  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done).catch(function () { fallbackCopy(txt); done(); }); }
+  else { fallbackCopy(txt); done(); }
+}
+function fallbackCopy(txt) {
+  const ta = document.createElement("textarea");
+  ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand("copy"); } catch (e) {}
+  document.body.removeChild(ta);
+}
+function copyDeployed() { if (state.contractAddr) copyText(state.contractAddr, "status2"); }
+function copySummary() { copyText($("summary").value, "status2"); }
+
+async function loadExisting() {
+  const addr = $("existingInput").value.trim();
+  if (!ethers.utils.isAddress(addr)) { setStatus("statusLoad", t("badAddr") + addr, "error"); return; }
+  state.contractAddr = addr;
+  localStorage.setItem(LS_KEY, JSON.stringify({ addr: addr }));
+  showDeployed();
+  setStatus("statusLoad", t("loaded"), "ok");
+  log("Loaded existing contract " + addr);
+  refreshManage();
+}
+
+function contractForRead() { return new ethers.Contract(state.contractAddr, ABI, readProvider()); }
+function contractForWrite() { return new ethers.Contract(state.contractAddr, ABI, state.signer); }
+
+async function refreshManage() {
+  if (!state.contractAddr) { buildSummary(); return; }
+  try {
+    const c = contractForRead();
+    const owner = await c.owner();
+    const open = await c.entryOpen();
+    const heat = await c.currentHeat();
+    const end = await c.heatEnd(heat);
+    state.reads = { owner: owner, open: open, heat: heat.toString(), heatEnd: end.toNumber() };
+    paintManage();
+  } catch (e) {
+    setStatus("status3", t("readFail") + (e.message || e), "error");
+    log("Read failed: " + (e.message || e));
+  }
+  buildSummary();
+}
+
+function paintManage() {
+  const r = state.reads;
+  if (!r) return;
+  $("readOwner").textContent = r.owner;
+  const pill = $("readEntryOpen");
+  pill.innerHTML = "";
+  const s = document.createElement("span");
+  s.className = "pill " + (r.open ? "open" : "closed");
+  s.textContent = r.open ? t("openIs") : t("closedIs");
+  pill.appendChild(s);
+  $("readHeat").textContent = "#" + r.heat;
+  $("readHeatEnd").textContent = new Date(r.heatEnd * 1000).toISOString().replace("T", " ").slice(0, 19) + " UTC";
+  const isOwner = !!(state.address && state.address.toLowerCase() === r.owner.toLowerCase());
+  $("btnOpen").disabled = !(isOwner && !r.open);
+  $("btnClose").disabled = !(isOwner && r.open);
+  if (state.signer) setStatus("status3", isOwner ? t("isOwner") : t("notOwner"), isOwner ? "ok" : "error");
+}
+
+async function setEntries(open) {
+  if (!state.signer || !state.contractAddr) return;
+  if (open && !confirm(t("confirmOpen"))) return;
+  if (!open && !confirm(t("confirmClose"))) return;
+  try {
+    setStatus("status3", t("sending"), "info");
+    const c = contractForWrite();
+    const tx = await c.setEntryOpen(open);
+    log("setEntryOpen(" + open + ") tx: " + tx.hash);
+    await tx.wait();
+    setStatus("status3", open ? t("nowOpen") : t("nowClosed"), "ok");
+    log(open ? "Entries OPEN." : "Entries CLOSED.");
+    refreshManage();
+  } catch (e) {
+    setStatus("status3", t("txFailed") + (e.message || e), "error");
+    log("setEntryOpen failed: " + (e.message || e));
+  }
+}
+
+function buildSummary() {
+  const r = state.reads;
+  const lines = [
+    "Crown Race (new game) — deployment summary",
+    "CrownRaceGame contract: " + (state.contractAddr || "-"),
+    "Agent ID registry (constructor): " + ($("registryInput") ? $("registryInput").value.trim() : REGISTRY_DEFAULT),
+    "Owner wallet: " + (r ? r.owner : "-"),
+    "Entries open: " + (r ? (r.open ? "YES" : "NO (open in step 03 when Muse confirms the site)") : "unknown"),
+    "Current heat: " + (r ? "#" + r.heat + " (ends " + new Date(r.heatEnd * 1000).toISOString().replace("T", " ").slice(0, 19) + " UTC)" : "unknown"),
+    "BscScan: " + (state.contractAddr ? "https://bscscan.com/address/" + state.contractAddr : "-")
+  ];
+  $("summary").value = lines.join("\n");
+}
+
+// Restore a previously deployed address kept in this browser.
+(function init() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+    if (saved && saved.addr && ethers.utils.isAddress(saved.addr)) {
+      state.contractAddr = saved.addr;
+      if (saved.registry) $("registryInput").value = saved.registry;
+      showDeployed();
+      log("Restored saved contract address " + saved.addr);
+      refreshManage();
+    }
+  } catch (e) {}
+  buildSummary();
+  if (window.ethereum) {
+    window.ethereum.on && window.ethereum.on("accountsChanged", function () { state.signer = null; state.address = null; paintWallet(); });
+    window.ethereum.on && window.ethereum.on("chainChanged", function () { window.location.reload(); });
+  }
+})();
+</script>
+</body>
+</html>
