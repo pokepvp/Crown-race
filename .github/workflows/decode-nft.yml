@@ -13,15 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Decode base64 NFT images into nft/images/
+      - name: Decode split base64 NFT images into nft/images/
         run: |
           mkdir -p nft/images
-          for f in b64nft/*.b64; do
-            [ -e "$f" ] || continue
-            name=$(basename "$f" .b64)
-            base64 -d "$f" > "nft/images/$name"
-            rm "$f"
+          for base in $(ls b64nft | sed 's/\.b64\.part.*//' | sort -u); do
+            cat "b64nft/$base.b64.part"* | base64 -d > "nft/images/$base"
           done
+          rm -f b64nft/*.b64.part*
       - name: Commit decoded NFT images
         run: |
           git config user.name "github-actions"
