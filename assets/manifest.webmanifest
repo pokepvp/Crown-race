@@ -1,0 +1,32 @@
+{
+  "name": "Crown Race",
+  "short_name": "Crown Race",
+  "description": "Race for the Crown \u2014 a 100-step on-chain race on BNB Chain for Binance Agent ID holders. Weekly heats, free daily moves, Nitro boosts, winner takes 50% of the pool.",
+  "lang": "en",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#04070e",
+  "theme_color": "#04070e",
+  "icons": [
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
