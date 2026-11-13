@@ -1,0 +1,32 @@
+name: decode-nft
+on:
+  push:
+    paths:
+      - "b64nft/**"
+permissions:
+  contents: write
+concurrency:
+  group: decode-nft
+  cancel-in-progress: false
+jobs:
+  decode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode base64 NFT images into nft/images/
+        run: |
+          mkdir -p nft/images
+          for f in b64nft/*.b64; do
+            [ -e "$f" ] || continue
+            name=$(basename "$f" .b64)
+            base64 -d "$f" > "nft/images/$name"
+            rm "$f"
+          done
+      - name: Commit decoded NFT images
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git commit -m "Decode NFT images" || echo "nothing to commit"
+          git pull --rebase origin main || true
+          git push
