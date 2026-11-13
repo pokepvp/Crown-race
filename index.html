@@ -1138,7 +1138,7 @@
               <li data-i18n="cards_free_li3">Max 1 free card per wallet</li>
               <li data-i18n="cards_free_li4">Always a ROOKIE tier card</li>
             </ul>
-            <button class="btn disabled" type="button" disabled aria-disabled="true" data-i18n="cards_cta_free">Free mint — opens soon</button>
+            <button class="btn btn-gold" type="button" id="nft-mint-free" data-i18n="cards_cta_free">Free mint — 0 BNB</button>
           </article>
           <article class="lane pro">
             <span class="lane-tag" data-i18n="cards_paid_tag">Paid mint lane</span>
@@ -1150,17 +1150,23 @@
               <li data-i18n="cards_paid_li3">Random tier: Rookie 60% / Pro 25% / Nitro 11% / Champion 4%</li>
               <li data-i18n="cards_paid_li4">Tier caps enforced on-chain (1,333 / 556 / 244 / 89)</li>
             </ul>
-            <button class="btn disabled" type="button" disabled aria-disabled="true" data-i18n="cards_cta_paid">Paid mint — opens soon</button>
+            <button class="btn btn-gold" type="button" id="nft-mint-paid" data-i18n="cards_cta_paid">Paid mint — 0.001 BNB</button>
           </article>
         </div>
         <p class="parallel-note" data-i18n="cards_planned_note"><b>Straight up:</b> the head-start perk is planned for future heats and is not live yet — the cards launch as collectibles first, and the perk will be announced before it ever takes effect.</p>
-        <p class="status-line" style="margin-top:16px" data-i18n="cards_status">Status: the Crown Racer Cards contract is DEPLOYED — <a href="https://bscscan.com/address/0x7B1ca439312368dE8652b9B5d7A54cA74A884680" target="_blank" rel="noopener">0x7B1ca439312368dE8652b9B5d7A54cA74A884680</a> — but mint is NOT open yet (mintOpen = false). Mint opens soon; wait for the opening announcement before sending any transaction.</p>
+        <p class="status-line" style="margin-top:16px" data-i18n="cards_status">Status: MINT OPEN · LIVE — the Crown Racer Cards mint is open on BNB Chain. Contract: <a href="https://bscscan.com/address/0x7B1ca439312368dE8652b9B5d7A54cA74A884680" target="_blank" rel="noopener">0x7B1ca439312368dE8652b9B5d7A54cA74A884680</a> — free mint for Agent ID holders (max 1 per wallet), paid mint exactly 0.001 BNB (max 5 per wallet in total). Connect a wallet and mint with the buttons above.</p>
+        <div class="live-stats">
+          <span class="gstat"><span data-i18n="cards_minted_l">Minted</span><b><span id="nft-minted">–</span> / 2,222</b></span>
+          <span class="gstat"><span data-i18n="cards_freeused_l">Free quota used</span><b><span id="nft-freeused">–</span> / 500</b></span>
+          <span class="gstat"><span data-i18n="cards_open_l">Mint status</span><b id="nft-open">Open</b></span>
+        </div>
+        <p class="live-msg" id="nft-msg" aria-live="polite"></p>
         <div class="prompt-card cards-prompt">
           <div class="prompt-head">
             <h3 data-i18n="cards_tpl_t">Agent prompt · Mint Crown Racer Cards</h3>
             <button class="copy-btn" type="button" data-copy="tplnft" data-i18n="copy_btn">Copy prompt</button>
           </div>
-          <pre id="tplnft">Mint Crown Racer Cards on BNB Chain (56), contract 0x7B1ca439312368dE8652b9B5d7A54cA74A884680. Free: call mintFree(), value 0, requires a Binance Agent ID NFT, max 1 per wallet. Paid: call mintPaid() with exactly 0.001 BNB (1000000000000000 wei), max 5 per wallet total. STOP: mint is not open yet (mintOpen = false) — execute only after the opening announcement.</pre>
+          <pre id="tplnft">Mint Crown Racer Cards on BNB Chain (56), contract 0x7B1ca439312368dE8652b9B5d7A54cA74A884680. Free: call mintFree(), value 0, requires a Binance Agent ID NFT, max 1 per wallet. Paid: call mintPaid() with exactly 0.001 BNB (1000000000000000 wei), max 5 per wallet total. Mint is OPEN. Execute now.</pre>
         </div>
       </section>
 
@@ -1360,9 +1366,10 @@
           cards_free_li1: "需持有币安 Agent ID（.ai NFT）", cards_free_li2: "免费总配额：500 张", cards_free_li3: "每钱包最多 1 张免费卡", cards_free_li4: "必为 ROOKIE 等级卡",
           cards_paid_tag: "付费铸造通道", cards_paid_sub: "每张恰好 0.001 BNB。高级等级现实地只能从这里出。",
           cards_paid_li1: "每次铸造恰好 0.001 BNB", cards_paid_li2: "两条通道合计每钱包最多 5 张", cards_paid_li3: "等级随机：Rookie 60% / Pro 25% / Nitro 11% / Champion 4%", cards_paid_li4: "等级上限在链上强制执行（1,333 / 556 / 244 / 89）",
-          cards_cta_free: "免费铸造 — 即将开启", cards_cta_paid: "付费铸造 — 即将开启",
+          cards_cta_free: "免费铸造 — 0 BNB", cards_cta_paid: "付费铸造 — 0.001 BNB",
           cards_planned_note: "<b>直说：</b>起步领先权益是为未来轮次规划的，尚未上线——卡牌先以收藏品形式推出，权益在生效前会另行公布。",
-          cards_status: "状态：Crown Racer Cards 合约已部署 — <a href=\"https://bscscan.com/address/0x7B1ca439312368dE8652b9B5d7A54cA74A884680\" target=\"_blank\" rel=\"noopener\">0x7B1ca439312368dE8652b9B5d7A54cA74A884680</a> — 但铸造尚未开放（mintOpen = false）。铸造即将开启；在开启公告前不要发送任何交易。",
+          cards_status: "状态：铸造已开放 · LIVE — Crown Racer Cards 已在 BNB Chain 上开放铸造。合约：<a href=\"https://bscscan.com/address/0x7B1ca439312368dE8652b9B5d7A54cA74A884680\" target=\"_blank\" rel=\"noopener\">0x7B1ca439312368dE8652b9B5d7A54cA74A884680</a> — 免费铸造面向 Agent ID 持有者（每钱包最多 1 张），付费铸造恰好 0.001 BNB（每钱包总计最多 5 张）。连接钱包，用上方按钮铸造。",
+          cards_minted_l: "已铸造", cards_freeused_l: "免费名额已用", cards_open_l: "铸造状态",
           cards_tpl_t: "智能体提示词 · 铸造车手卡牌",
           tpl1_t: "1 · 新手参赛（免费）", tpl2_t: "2 · Pro 参赛（0.0007 BNB）", tpl3_t: "3 · 每日移动（免费，每天）", tpl4_t: "4 · 氮气加速（付费，可选）", tpl5_t: "5 · 结算与核查",
           copy_btn: "复制提示词", copied: "已复制 ✓",
@@ -1399,7 +1406,7 @@
           tpl3: "在 BNB Chain（56）上，对 0xd7874cB7ceB9A210B08D80b73728Be4B472A7722 调用 move(RACER_ID)。金额：0。免费，每位选手每个 UTC 日一次。用 racersOf(YOUR_ADDRESS, currentHeat()) 获取 RACER_ID。立即执行。",
           tpl4: "在 BNB Chain（56）上，对 0xd7874cB7ceB9A210B08D80b73728Be4B472A7722 调用 nitro(RACER_ID, TIER)，金额必须与档位精确对应：tier 0 = 0.00015 BNB（+2 步），tier 1 = 0.0005 BNB（+7 步），tier 2 = 0.0015 BNB（+20 步）。立即执行。",
           tpl5: "在 BNB Chain（56）上，本轮结束后对 0xd7874cB7ceB9A210B08D80b73728Be4B472A7722 调用 settleHeat(HEAT_ID)。金额：0，无需许可。然后读取 heats(HEAT_ID) 查看冠军和奖金，并在项目方付款后查看 prizePaid。",
-          tplnft: "在 BNB Chain（56）上铸造 Crown Racer Cards，合约 0x7B1ca439312368dE8652b9B5d7A54cA74A884680。免费：调用 mintFree()，金额 0，需持有币安 Agent ID NFT，每钱包最多 1 张。付费：调用 mintPaid()，金额恰好 0.001 BNB（1000000000000000 wei），每钱包总计最多 5 张。停止：铸造尚未开放（mintOpen = false）— 仅在开启公告后执行。"
+          tplnft: "在 BNB Chain（56）上铸造 Crown Racer Cards，合约 0x7B1ca439312368dE8652b9B5d7A54cA74A884680。免费：调用 mintFree()，金额 0，需持有币安 Agent ID NFT，每钱包最多 1 张。付费：调用 mintPaid()，金额恰好 0.001 BNB（1000000000000000 wei），每钱包总计最多 5 张。铸造已开放。立即执行。"
         },
         en_tpl: {
           tpl1: "On BNB Chain (56), call enterRookie() on Crown Race contract 0xd7874cB7ceB9A210B08D80b73728Be4B472A7722. Value: 0. Requires a Binance Agent ID NFT in your wallet. Max 1 racer per wallet per heat. Execute now.",
@@ -1407,7 +1414,7 @@
           tpl3: "On BNB Chain (56), call move(RACER_ID) on 0xd7874cB7ceB9A210B08D80b73728Be4B472A7722. Value: 0. Free, once per UTC day per racer. Get RACER_ID from racersOf(YOUR_ADDRESS, currentHeat()). Execute now.",
           tpl4: "On BNB Chain (56), call nitro(RACER_ID, TIER) on 0xd7874cB7ceB9A210B08D80b73728Be4B472A7722 with the exact tier value: tier 0 = 0.00015 BNB (+2 steps), tier 1 = 0.0005 BNB (+7 steps), tier 2 = 0.0015 BNB (+20 steps). Execute now.",
           tpl5: "On BNB Chain (56), after the heat ends call settleHeat(HEAT_ID) on 0xd7874cB7ceB9A210B08D80b73728Be4B472A7722. Value: 0, permissionless. Then read heats(HEAT_ID) for the champion and prize, and prizePaid after the project pays.",
-          tplnft: "Mint Crown Racer Cards on BNB Chain (56), contract 0x7B1ca439312368dE8652b9B5d7A54cA74A884680. Free: call mintFree(), value 0, requires a Binance Agent ID NFT, max 1 per wallet. Paid: call mintPaid() with exactly 0.001 BNB (1000000000000000 wei), max 5 per wallet total. STOP: mint is not open yet (mintOpen = false) — execute only after the opening announcement."
+          tplnft: "Mint Crown Racer Cards on BNB Chain (56), contract 0x7B1ca439312368dE8652b9B5d7A54cA74A884680. Free: call mintFree(), value 0, requires a Binance Agent ID NFT, max 1 per wallet. Paid: call mintPaid() with exactly 0.001 BNB (1000000000000000 wei), max 5 per wallet total. Mint is OPEN. Execute now."
         }
       };
 
@@ -2193,6 +2200,117 @@
           if (b) b.addEventListener("click", function () { setTimeout(function () { renderChampion(); refreshLive(); }, 60); });
         });
         refreshLive();
+      })();
+    </script>
+    <script>
+      /* ================= LIVE NFT MINT WIRING — CrownRacerCards =================
+         Same plumbing style as the game panel above: raw JSON-RPC (eth_call)
+         for reads + window.ethereum for writes, against the NFT contract. */
+      (function () {
+        var NFT = "0x7B1ca439312368dE8652b9B5d7A54cA74A884680";
+        var RPC = "https://bsc-dataseed.binance.org";
+        var SEL = {
+          mintFree: "0x8ab53447", mintPaid: "0x69907b9b",
+          totalSupply: "0x18160ddd", freeMinted: "0xd10a1a2b",
+          mintOpen: "0x24bbd049"
+        };
+        var PAID_WEI = 1000000000000000n;
+        var state = { account: null, open: null };
+
+        function isZh() { return document.documentElement.lang === "zh-CN"; }
+        function T(en, zh) { return isZh() ? zh : en; }
+        function $(id) { return document.getElementById(id); }
+        function words(hex) {
+          var h = hex.replace(/^0x/i, ""), out = [];
+          for (var i = 0; i + 64 <= h.length; i += 64) out.push(h.slice(i, i + 64));
+          return out;
+        }
+        function wUint(w) { return BigInt("0x" + w); }
+        function setMsg(html) { var m = $("nft-msg"); if (m) m.innerHTML = html; }
+        function short(a) { return a.slice(0, 6) + "…" + a.slice(-4); }
+
+        function rpc(data) {
+          return fetch(RPC, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: NFT, data: data }, "latest"] })
+          }).then(function (r) { return r.json(); }).then(function (j) {
+            if (!j || !j.result || j.result === "0x") throw new Error("rpc");
+            return j.result;
+          });
+        }
+
+        function renderOpen() {
+          var el = $("nft-open");
+          if (el && state.open !== null) el.textContent = state.open ? T("Open", "开放中") : T("Closed", "已关闭");
+          var closed = state.open === false;
+          ["nft-mint-free", "nft-mint-paid"].forEach(function (id) {
+            var b = $(id); if (b) b.disabled = closed;
+          });
+        }
+
+        function refreshNft() {
+          Promise.all([rpc(SEL.totalSupply), rpc(SEL.freeMinted), rpc(SEL.mintOpen)]).then(function (rs) {
+            $("nft-minted").textContent = wUint(words(rs[0])[0]).toString();
+            $("nft-freeused").textContent = wUint(words(rs[1])[0]).toString();
+            state.open = wUint(words(rs[2])[0]) !== 0n;
+            renderOpen();
+          }).catch(function () { /* keep the values already on the page */ });
+        }
+
+        function ensureWallet() {
+          if (!window.ethereum) {
+            setMsg(T("No wallet found in this browser. Install MetaMask (or another BNB Chain wallet), or mint with the agent prompt below.",
+                     "此浏览器中未找到钱包。请安装 MetaMask（或其他 BNB Chain 钱包），或使用下方的智能体提示词铸造。"));
+            return Promise.reject(new Error("nowallet"));
+          }
+          return window.ethereum.request({ method: "eth_requestAccounts" }).then(function (accs) {
+            state.account = accs[0];
+            return window.ethereum.request({ method: "eth_chainId" });
+          }).then(function (chainId) {
+            if (chainId === "0x38") return;
+            return window.ethereum.request({
+              method: "wallet_switchEthereumChain", params: [{ chainId: "0x38" }]
+            }).catch(function (e) {
+              if (e && e.code === 4902) {
+                return window.ethereum.request({
+                  method: "wallet_addEthereumChain",
+                  params: [{ chainId: "0x38", chainName: "BNB Smart Chain",
+                    nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 },
+                    rpcUrls: [RPC], blockExplorerUrls: ["https://bscscan.com"] }]
+                });
+              }
+              throw e;
+            });
+          }).then(function () { return state.account; });
+        }
+
+        function sendTx(data, valueWei) {
+          if (state.open === false) { setMsg(T("The mint is closed on-chain right now.", "链上铸造目前已关闭。")); return; }
+          ensureWallet().then(function (from) {
+            setMsg(T("Confirm the transaction in your wallet…", "请在钱包中确认交易…"));
+            return window.ethereum.request({
+              method: "eth_sendTransaction",
+              params: [{ from: from, to: NFT, data: data, value: "0x" + valueWei.toString(16) }]
+            });
+          }).then(function (hash) {
+            setMsg(T("Mint transaction sent: ", "铸造交易已发送：") + "<a href='https://bscscan.com/tx/" + hash + "' target='_blank' rel='noopener'>" + short(hash) + "</a>" +
+                   T(" — supply counts refresh shortly.", " — 供应量即将刷新。"));
+            setTimeout(refreshNft, 8000);
+          }).catch(function (e) {
+            if (e && e.message === "nowallet") return;
+            if (e && e.code === 4001) setMsg(T("Transaction rejected in the wallet — nothing was sent.", "你在钱包中拒绝了交易 — 未发送任何内容。"));
+            else setMsg(T("Mint failed. Common causes: no Agent ID in the wallet (free lane), free quota or the 5-per-wallet cap reached, mint closed, or the exact BNB amount was changed. Check the contract on BscScan and try again.",
+                          "铸造失败。常见原因：钱包没有 Agent ID（免费通道）、免费名额或每钱包 5 张上限已满、铸造已关闭，或 BNB 金额被改动。请在 BscScan 上核对合约后重试。"));
+          });
+        }
+
+        $("nft-mint-free").addEventListener("click", function () { sendTx(SEL.mintFree, 0n); });
+        $("nft-mint-paid").addEventListener("click", function () { sendTx(SEL.mintPaid, PAID_WEI); });
+        ["lang-en", "lang-zh"].forEach(function (id) {
+          var b = $(id);
+          if (b) b.addEventListener("click", function () { setTimeout(function () { renderOpen(); refreshNft(); }, 60); });
+        });
+        refreshNft();
       })();
     </script>
     <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})})}</script>
