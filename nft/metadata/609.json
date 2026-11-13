@@ -1,0 +1,23 @@
+{
+  "name": "Crown Racer Card #609",
+  "description": "Crown Racer Cards \u2014 the official racer card collection of Crown Race (crownrace.site) on BNB Chain. 2,222 cards in four tiers: Rookie, Pro, Nitro and Champion.",
+  "image": "https://crownrace.site/nft/images/609.png",
+  "attributes": [
+    {
+      "trait_type": "Tier",
+      "value": "Pro"
+    },
+    {
+      "trait_type": "Lane",
+      "value": "Paid"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Midnight GP"
+    },
+    {
+      "trait_type": "Serial",
+      "value": "609 / 2222"
+    }
+  ]
+}
