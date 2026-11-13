@@ -27,7 +27,7 @@
     "metadata": "https://crownrace.site/nft/metadata/",
     "name": "Crown Racer Cards",
     "paidMint": "exactly 0.001 BNB, max 5 per wallet total across both lanes",
-    "status": "deployed, mint not yet open",
+    "status": "mint open",
     "supply": 2222
   },
   "status": "live",
