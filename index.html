@@ -853,10 +853,28 @@
 
           <!-- playable game -->
           <div class="game" id="game">
+            <style>
+              #game{position:relative}
+              .gate-overlay{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(4,8,16,.74);backdrop-filter:blur(3px);padding:20px}
+              .gate-card{max-width:520px;text-align:center;background:rgba(10,17,30,.94);border:1px solid rgba(246,184,30,.45);border-radius:14px;padding:26px 24px}
+              .gate-card h3{margin:0 0 10px;color:#f6b81e}
+              .gate-card p{margin:0 0 16px}
+              .gate-msg{min-height:22px;margin:12px 0 0}
+              .gate-mint{display:inline-block;margin-top:12px}
+            </style>
+            <div class="gate-overlay" id="nft-gate">
+              <div class="gate-card">
+                <h3 data-i18n="gate_title">The Holders’ Race</h3>
+                <p data-i18n="gate_sub">Play the full race in your browser — reserved for Crown Racer Card holders. Connect your wallet and we check your cards on-chain. No signature, no BNB spent.</p>
+                <button type="button" class="btn btn-gold" id="gate-connect" data-i18n="gate_btn">Connect wallet to play</button>
+                <p class="gate-msg" id="gate-msg" aria-live="polite"></p>
+                <a class="gate-mint" href="#cards" data-i18n="gate_mint">No card yet? Mint one below →</a>
+              </div>
+            </div>
             <div class="game-head">
-              <h3 data-i18n="game_title">Play a full demo heat</h3>
-              <p data-i18n="game_sub">A complete playable race against 11 rival racers, using the real Crown Race rules: pick a lane, roll the daily dice, burn Nitro to catch up, and take the crown at step 100 — or be farthest after Day 30.</p>
-              <span class="game-honest" data-i18n="game_honest">Playable demo — a simulation with play credits only, no wallet, no real BNB. The real on-chain race is LIVE: enter with your wallet in the Enter section below.</span>
+              <h3 data-i18n="game_title">The Holders’ Race — play the full heat</h3>
+              <p data-i18n="game_sub">A complete playable race against 11 rival racers, using the real Crown Race rules: pick a lane, roll the daily dice, burn Nitro to catch up, and take the crown at step 100 — or be farthest after Day 30. Holders only — connect a wallet holding a Crown Racer Card to play.</p>
+              <span class="game-honest" data-i18n="game_honest">Holders’ game room — a simulation with play credits only, no real BNB moves. Playing takes a Crown Racer Card in your connected wallet (any tier). The real on-chain race is LIVE: enter with your wallet in the Enter section below.</span>
             </div>
 
             <div class="game-stats">
@@ -1154,7 +1172,7 @@
             <button class="btn btn-gold" type="button" id="nft-mint-paid" data-i18n="cards_cta_paid">Paid mint — 0.001 BNB</button>
           </article>
         </div>
-        <p class="parallel-note" data-i18n="cards_planned_note"><b>Straight up:</b> the head-start perk is planned for future heats and is not live yet — the cards launch as collectibles first, and the perk will be announced before it ever takes effect.</p>
+        <p class="parallel-note" data-i18n="cards_planned_note"><b>Straight up:</b> the cards already unlock the Holders’ Race game room above — that utility is live. A racing head-start perk for card holders is planned for future heats and is not live yet; it will be announced before it ever takes effect.</p>
         <p class="status-line" style="margin-top:16px" data-i18n="cards_status">Status: MINT OPEN · LIVE — the Crown Racer Cards mint is open on BNB Chain. Contract: <a href="https://bscscan.com/address/0x7B1ca439312368dE8652b9B5d7A54cA74A884680" target="_blank" rel="noopener">0x7B1ca439312368dE8652b9B5d7A54cA74A884680</a> — free mint for Agent ID holders (max 1 per wallet), paid mint exactly 0.001 BNB (max 5 per wallet in total). Connect a wallet and mint with the buttons above.</p>
         <div class="live-stats">
           <span class="gstat"><span data-i18n="cards_minted_l">Minted</span><b><span id="nft-minted">–</span> / 2,222</b></span>
@@ -1314,12 +1332,12 @@
           track_sub: "每位选手从起跑线出发，沿着金色赛道线一步步前进。第 100 步就是皇冠。赛道没有捷径——只有每日移动和氮气加速。",
           tick_quarter: "四分之一", tick_half: "半程", tick_three: "最后冲刺", pro_start: "PRO 起点 · 第 5 步", crown_label: "皇冠", move_arrow: "每日移动：+1–6 步，免费",
           leg_rookie: "新手起点 — 第 0 步", leg_pro: "Pro 领先起点 — 第 5 步", leg_crown: "皇冠 — 第 100 步",
-          game_title: "完整打一轮演示赛", game_sub: "一场可真正游玩的比赛：与 11 名对手竞速，规则与真实 Crown Race 相同：选择通道、掷每日骰子、烧氮气追赶，在第 100 步夺取皇冠——或在第 30 天结束时走得最远。",
-          game_honest: "可玩演示 — 仅使用游戏点数的模拟，无需钱包，不涉及真实 BNB。真实的链上比赛已上线：在下方参赛区用钱包参赛。",
+          game_title: "持卡者赛场 — 完整打一轮", game_sub: "一场可真正游玩的比赛：与 11 名对手竞速，规则与真实 Crown Race 相同：选择通道、掷每日骰子、烧氮气追赶，在第 100 步夺取皇冠——或在第 30 天结束时走得最远。仅限持卡者——连接持有 Crown Racer Card 的钱包即可游玩。",
+          game_honest: "持卡者游戏室 — 仅使用游戏点数的模拟，不涉及真实 BNB。游玩需要连接的钱包中持有一张 Crown Racer Card（任意档位）。真实的链上比赛已上线：在下方参赛区用钱包参赛。",
           gs_day: "天数", gs_credits: "你的点数", gs_pool: "奖池", gs_pos: "你的位置", gs_rank: "你的排名",
           pick_rookie_b: "新手 — 免费", pick_rookie_s: "从第 0 步出发 · 花费 0 CR",
           pick_pro_b: "Pro — 70 CR", pick_pro_s: "从第 5 步出发 · 70 CR 进入奖池",
-          game_start: "开始比赛", game_roll: "掷骰子", stand_title: "实时排名", log_title: "比赛日志",
+          game_start: "开始比赛", game_roll: "掷骰子", gate_title: "持卡者赛场", gate_sub: "在浏览器里完整打一轮——仅限 Crown Racer Card 持卡者。连接钱包，我们在链上检查你的卡；不需签名，不花费任何 BNB。", gate_btn: "连接钱包开始游玩", gate_mint: "还没有卡？在下方铸造一张 →", stand_title: "实时排名", log_title: "比赛日志",
           podium_title: "冠军加冕", game_again: "再赛一轮 — 新比赛，重新发放 1,000 CR",
           trophy_title: "奖杯架", trophy_heats: "已参赛轮次", trophy_wins: "夺冠", trophy_podiums: "登上领奖台", trophy_best: "最佳名次",
           how_kicker: "一轮比赛如何进行", how_title: "参赛。每天移动。夺取皇冠。",
@@ -1370,7 +1388,7 @@
           cards_paid_tag: "付费铸造通道", cards_paid_sub: "每张恰好 0.001 BNB。高级等级现实地只能从这里出。",
           cards_paid_li1: "每次铸造恰好 0.001 BNB", cards_paid_li2: "两条通道合计每钱包最多 5 张", cards_paid_li3: "等级随机：Rookie 60% / Pro 25% / Nitro 11% / Champion 4%", cards_paid_li4: "等级上限在链上强制执行（1,333 / 556 / 244 / 89）",
           cards_cta_free: "免费铸造 — 0 BNB", cards_cta_paid: "付费铸造 — 0.001 BNB",
-          cards_planned_note: "<b>直说：</b>起步领先权益是为未来轮次规划的，尚未上线——卡牌先以收藏品形式推出，权益在生效前会另行公布。",
+          cards_planned_note: "<b>直说：</b>卡牌已经可以解锁上方的持卡者赛场——该功能已上线。持卡者的起步领先权益仍在为未来轮次规划，尚未上线；生效前会另行公布。",
           cards_status: "状态：铸造已开放 · LIVE — Crown Racer Cards 已在 BNB Chain 上开放铸造。合约：<a href=\"https://bscscan.com/address/0x7B1ca439312368dE8652b9B5d7A54cA74A884680\" target=\"_blank\" rel=\"noopener\">0x7B1ca439312368dE8652b9B5d7A54cA74A884680</a> — 免费铸造面向 Agent ID 持有者（每钱包最多 1 张），付费铸造恰好 0.001 BNB（每钱包总计最多 5 张）。连接钱包，用上方按钮铸造。",
           cards_minted_l: "已铸造", cards_freeused_l: "免费名额已用", cards_remain_l: "剩余供应", cards_open_l: "铸造状态",
           cards_tpl_t: "智能体提示词 · 铸造车手卡牌",
@@ -2377,6 +2395,72 @@
         refreshNft();
         setInterval(refreshNft, 10000);
         document.addEventListener("visibilitychange", function () { if (!document.hidden) refreshNft(); });
+      })();
+    </script>
+    <script>
+      /* ============ HOLDERS' GATE — Crown Racer Cards ownership check ============ */
+      (function () {
+        var NFT = "0x7B1ca439312368dE8652b9B5d7A54cA74A884680";
+        var RPCS = ["https://bsc-dataseed.binance.org", "https://bsc-dataseed1.defibit.io", "https://bsc-dataseed1.ninicoin.io", "https://bsc-rpc.publicnode.com"];
+        var gate = document.getElementById("nft-gate");
+        if (!gate) return;
+        var msg = document.getElementById("gate-msg");
+        var btn = document.getElementById("gate-connect");
+        function isZh() { return document.documentElement.lang === "zh-CN"; }
+        function T(en, zh) { return isZh() ? zh : en; }
+        function setMsg(t) { if (msg) msg.textContent = t; }
+        function rpc(data) {
+          return Promise.any(RPCS.map(function (u) {
+            return fetch(u, { method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: NFT, data: data }, "latest"] })
+            }).then(function (r) { return r.json(); }).then(function (j) {
+              if (!j || !j.result || j.result === "0x") throw new Error("rpc");
+              return j.result;
+            });
+          }));
+        }
+        function check(addr) {
+          setMsg(T("Checking your cards on-chain…", "正在链上检查你的卡牌…"));
+          var data = "0x70a08231" + addr.replace(/^0x/i, "").toLowerCase().padStart(64, "0");
+          return rpc(data).then(function (res) {
+            if (BigInt(res) > 0n) {
+              try { localStorage.setItem("cr-gate-addr", addr); } catch (e) {}
+              gate.style.display = "none";
+              return true;
+            }
+            gate.style.display = "";
+            setMsg(T("No Crown Racer Card in this wallet yet. Mint one in the Cards section below — the free lane takes a Binance Agent ID, the paid lane is 0.001 BNB.", "这个钱包里还没有 Crown Racer Card。请在下方卡牌区铸造一张——免费通道需要币安 Agent ID，付费通道 0.001 BNB。"));
+            return false;
+          }).catch(function () {
+            setMsg(T("Could not read the chain just now — check your connection and try again.", "暂时无法读取链上数据——请检查网络后重试。"));
+            return false;
+          });
+        }
+        function connect() {
+          if (!window.ethereum) {
+            setMsg(T("No wallet found in this browser. Open this page in your wallet app's browser, or mint with the agent prompt in the Cards section.", "此浏览器中未找到钱包。请在钱包 App 的浏览器中打开本页，或使用卡牌区的智能体提示词铸造。"));
+            return;
+          }
+          setMsg(T("Connecting…", "连接中…"));
+          window.ethereum.request({ method: "eth_requestAccounts" }).then(function (accs) {
+            return window.ethereum.request({ method: "eth_chainId" }).then(function (cid) {
+              if (cid === "0x38") return accs[0];
+              return window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x38" }] }).then(function () { return accs[0]; });
+            });
+          }).then(function (addr) { return check(addr); }).catch(function (e) {
+            if (e && e.code === 4001) setMsg(T("Connection rejected in the wallet — nothing was signed or sent.", "你在钱包中拒绝了连接——未签名、未发送任何内容。"));
+            else setMsg(T("Connection failed — try again.", "连接失败——请重试。"));
+          });
+        }
+        if (btn) btn.addEventListener("click", connect);
+        var cached = null;
+        try { cached = localStorage.getItem("cr-gate-addr"); } catch (e) {}
+        if (cached) check(cached);
+        if (window.ethereum && window.ethereum.on) {
+          window.ethereum.on("accountsChanged", function (accs) {
+            if (accs && accs.length) check(accs[0]);
+          });
+        }
       })();
     </script>
     <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})})}</script>
